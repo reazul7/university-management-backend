@@ -1,25 +1,23 @@
 import { model, Schema } from 'mongoose'
-import { Guardian, LocalGuardian, Student, UserName } from './student.interface'
+import {
+    TGuardian,
+    TLocalGuardian,
+    TStudent,
+    StudentMethods,
+    StudentModel,
+    TUserName,
+} from './student.interface'
 
-const userNameSchema = new Schema<UserName>({
+const userNameSchema = new Schema<TUserName>({
     firstName: {
         type: String,
         trim: true,
         required: [true, 'First Name is required'],
         maxLength: [20, 'First Name can not be more than 20 character'],
-        validate: {
-            validator: function (value) {
-                const firstNameStr =
-                    value.charAt(0).toUpperCase() + value.slice(1)
-                return firstNameStr === value
-            },
-            message: 'First Name should start with capital letter',
-        },
     },
     middleName: {
         type: String,
         trim: true,
-        maxLength: [20, 'Middle Name can not be more than 20 character'],
     },
     lastName: {
         type: String,
@@ -29,7 +27,7 @@ const userNameSchema = new Schema<UserName>({
     },
 })
 
-const guardianSchema = new Schema<Guardian>({
+const guardianSchema = new Schema<TGuardian>({
     fatherName: {
         type: String,
         trim: true,
@@ -62,7 +60,7 @@ const guardianSchema = new Schema<Guardian>({
     },
 })
 
-const localGuardianSchema = new Schema<LocalGuardian>({
+const localGuardianSchema = new Schema<TLocalGuardian>({
     name: {
         type: String,
         trim: true,
@@ -85,52 +83,107 @@ const localGuardianSchema = new Schema<LocalGuardian>({
     },
 })
 
-const studentSchema = new Schema<Student>({
-    id: { type: String, required: [true, 'ID will be unique'], unique: true },
-    name: {
-        type: userNameSchema,
-        required: [true, 'Student Name is required'],
-    },
-    gender: {
-        type: String,
-        enum: {
-            values: ['male', 'female', 'other'],
-            message: '{VALUE} is not a valid gender.',
+const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>(
+    {
+        id: { type: String, required: [true, 'ID is required'], unique: true },
+        name: {
+            type: userNameSchema,
+            required: [true, 'Student Name is required'],
         },
-        required: true,
-    },
-    dateOfBirth: {
-        type: String,
-        required: [true, 'Date of Birth is required'],
-    },
-    email: { type: String, unique: true },
-    contactNumber: { type: String, required: true },
-    emergencyNumber: { type: String, required: true },
-    bloodGroup: {
-        type: String,
-        enum: {
-            values: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
-            message: '{VALUE} is not a valid blood group.',
+        gender: {
+            type: String,
+            enum: {
+                values: ['male', 'female', 'other'],
+                message: '{VALUE} is not a valid gender.',
+            },
+            required: true,
+        },
+        religion: {
+            type: String,
+            enum: {
+                values: ['muslim', 'hindu', 'buddhist', 'christian', 'others'],
+                message: '{VALUE} is not a valid religions.',
+            },
+            required: true,
+        },
+        dateOfBirth: {
+            type: String,
+            required: [true, 'Date of Birth is required'],
+        },
+        email: {
+            type: String,
+            unique: true,
+            required: [true, 'Email is required'],
+        },
+        contactNumber: {
+            type: String,
+            required: [true, 'Contact Number is required'],
+        },
+        emergencyNumber: {
+            type: String,
+            required: [true, 'Emergency Number is required'],
+        },
+        bloodGroup: {
+            type: String,
+            enum: {
+                values: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+                message: '{VALUE} is not a valid blood group.',
+            },
+        },
+        presentAddress: {
+            type: String,
+            required: [true, 'Present Address is required'],
+        },
+        permanentAddress: {
+            type: String,
+            required: [true, 'Permanent Address is required'],
+        },
+        guardian: {
+            type: guardianSchema,
+            required: [true, 'Guardian is required'],
+        },
+        localGuardian: {
+            type: localGuardianSchema,
+            required: [true, 'Local Guardian is required'],
+        },
+        profileImgUrl: { type: String },
+        isActive: {
+            type: String,
+            enum: ['active', 'inactive'],
+            default: 'inactive',
+            required: true,
+        },
+        isDeleted: {
+            type: Boolean,
+            default: false,
         },
     },
-    presentAddress: { type: String, required: true },
-    permanentAddress: { type: String, required: true },
-    guardian: {
-        type: guardianSchema,
-        required: true,
+    {
+        toJSON: {
+            virtuals: true,
+        },
     },
-    localGuardian: {
-        type: localGuardianSchema,
-        required: true,
-    },
-    profileImgUrl: { type: String },
-    isActive: {
-        type: String,
-        enum: ['active', 'inactive'],
-        default: 'inactive',
-        required: true,
-    },
+)
+
+// virtual
+studentSchema.virtual('fullName').get(function () {
+    return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`
 })
 
-// 3. Create a Model.
-export const StudentModel = model<Student>('Student', studentSchema)
+// creating a custom instance method
+studentSchema.methods.isUserExists = async function (id: string) {
+    const existingUser = await Student.findOne({ id })
+    return existingUser
+}
+
+// query middleware function
+studentSchema.pre('find', function (next) {
+    this.find({ isDeleted: { $ne: true } })
+    next()
+})
+studentSchema.pre('findOne', function (next) {
+    this.find({ isDeleted: { $ne: true } })
+    next()
+})
+
+export const Student = model<TStudent, StudentModel>('Student', studentSchema)
