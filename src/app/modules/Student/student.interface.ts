@@ -1,10 +1,12 @@
-export type UserName = {
+import { Model } from 'mongoose'
+
+export type TUserName = {
     firstName: string
     middleName?: string
     lastName: string
 }
 
-export type Guardian = {
+export type TGuardian = {
     fatherName: string
     fatherOccupation: string
     fatherContactNumber: string
@@ -13,26 +15,38 @@ export type Guardian = {
     motherContactNumber: string
 }
 
-export type LocalGuardian = {
+export type TLocalGuardian = {
     name: string
     occupation: string
     contactNumber: string
     address: string
 }
 
-export type Student = {
+export type TStudent = {
     id: string
-    name: UserName
+    name: TUserName
     gender: 'male' | 'female' | 'other'
+    religion: 'muslim' | 'hindu' | 'buddhist' | 'christian' | 'others'
     dateOfBirth: string
-    email?: string
+    email: string
     contactNumber: string
     emergencyNumber: string
     bloodGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-'
     presentAddress: string
     permanentAddress: string
-    guardian: Guardian
-    localGuardian: LocalGuardian
+    guardian: TGuardian
+    localGuardian: TLocalGuardian
     profileImgUrl?: string
     isActive?: 'active' | 'inactive'
+    isDeleted: boolean
 }
+
+export type StudentMethods = {
+    isUserExists(id: string): Promise<TStudent | null>
+}
+
+export type StudentModel = Model<
+    TStudent,
+    Record<string, never>,
+    StudentMethods
+>
