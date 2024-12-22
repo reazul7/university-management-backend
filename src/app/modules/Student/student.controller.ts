@@ -1,5 +1,7 @@
+import { StatusCodes } from 'http-status-codes'
 import { NextFunction, Request, Response } from 'express'
 import { StudentServices } from './student.service'
+import sendResponse from '../../utils/sendResponse'
 
 const getAllStudents = async (
     req: Request,
@@ -8,8 +10,8 @@ const getAllStudents = async (
 ) => {
     try {
         const result = await StudentServices.getAllStudentsFromDB()
-
-        res.status(200).json({
+        sendResponse(res, {
+            statusCode: StatusCodes.OK,
             success: true,
             message: 'Students fetched successfully',
             data: result,
@@ -34,8 +36,8 @@ const getSingleStudent = async (
         //         message: 'Student not found',
         //     })
         // }
-
-        res.status(200).json({
+        sendResponse(res, {
+            statusCode: StatusCodes.OK,
             success: true,
             message: 'Student fetched successfully',
             data: result,
@@ -61,7 +63,8 @@ const deleteStudent = async (
         //     })
         // }
 
-        res.status(200).json({
+        sendResponse(res, {
+            statusCode: StatusCodes.OK,
             success: true,
             message: 'Student deleted successfully',
             data: result,
