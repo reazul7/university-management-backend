@@ -42,30 +42,47 @@ const localGuardianValidationSchema = z.object({
     address: z.string().max(100).min(1),
 })
 
-const studentValidationSchema = z.object({
-    id: z.string().max(50).min(1),
-    name: userNameValidationSchema,
-    gender: z.enum(['male', 'female', 'other']),
-    religion: z.enum(['muslim', 'hindu', 'buddhist', 'christian', 'others']),
-    dateOfBirth: z.string(),
-    email: z.string().email(),
-    contactNumber: z
-        .string()
-        .max(15)
-        .min(10)
-        .regex(/^[0-9]+$/),
-    emergencyNumber: z
-        .string()
-        .max(15)
-        .min(10)
-        .regex(/^[0-9]+$/),
-    bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
-    presentAddress: z.string().max(200).min(1),
-    permanentAddress: z.string().max(200).min(1),
-    guardian: guardianValidationSchema,
-    localGuardian: localGuardianValidationSchema,
-    profileImgUrl: z.string().url().optional(),
-    isDeleted: z.boolean(),
+const createStudentValidationSchema = z.object({
+    body: z.object({
+        student: z.object({
+            name: userNameValidationSchema,
+            gender: z.enum(['male', 'female', 'other']),
+            religion: z.enum([
+                'muslim',
+                'hindu',
+                'buddhist',
+                'christian',
+                'others',
+            ]),
+            dateOfBirth: z.string(),
+            email: z.string().email(),
+            contactNumber: z
+                .string()
+                .max(15)
+                .min(10)
+                .regex(/^[0-9]+$/),
+            emergencyNumber: z
+                .string()
+                .max(15)
+                .min(10)
+                .regex(/^[0-9]+$/),
+            bloodGroup: z.enum([
+                'A+',
+                'A-',
+                'B+',
+                'B-',
+                'AB+',
+                'AB-',
+                'O+',
+                'O-',
+            ]),
+            presentAddress: z.string().max(200).min(1),
+            permanentAddress: z.string().max(200).min(1),
+            guardian: guardianValidationSchema,
+            localGuardian: localGuardianValidationSchema,
+            profileImgUrl: z.string().url().optional(),
+        }),
+    }),
 })
 
-export default studentValidationSchema
+export const studentValidations = { createStudentValidationSchema }
