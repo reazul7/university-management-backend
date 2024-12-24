@@ -54,7 +54,7 @@ const createStudentValidationSchema = z.object({
                 'christian',
                 'others',
             ]),
-            dateOfBirth: z.string(),
+            dateOfBirth: z.date(),
             email: z.string().email(),
             contactNumber: z
                 .string()

@@ -28,7 +28,7 @@ export type TStudent = {
     name: TUserName
     gender: 'male' | 'female' | 'other'
     religion: 'muslim' | 'hindu' | 'buddhist' | 'christian' | 'others'
-    dateOfBirth: string
+    dateOfBirth: Date
     email: string
     contactNumber: string
     emergencyNumber: string
