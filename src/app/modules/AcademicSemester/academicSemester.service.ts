@@ -3,11 +3,48 @@ import { TAcademicSemester } from './academicSemester.interface'
 import { AcademicSemester } from './academicSemester.model'
 
 const createAcademicSemesterIntoDB = async (payload: TAcademicSemester) => {
-    if(AcademicSemesterNameCodeMapper[payload.name] !== payload.code){
+    if (AcademicSemesterNameCodeMapper[payload.name] !== payload.code) {
         throw new Error('Invalid semester name and code combination.')
     }
     const result = await AcademicSemester.create(payload)
     return result
 }
 
-export const AcademicSemesterServices = { createAcademicSemesterIntoDB }
+const getAllAcademicSemestersFromDB = async () => {
+    const result = await AcademicSemester.find()
+    return result
+}
+
+const getSingleAcademicSemesterFromDB = async (id: string) => {
+    const result = await AcademicSemester.findById(id)
+    return result
+}
+
+const updateAcademicSemesterIntoDB = async (
+    id: string,
+    payload: Partial<TAcademicSemester>,
+) => {
+    if (
+        payload.name &&
+        payload.code &&
+        AcademicSemesterNameCodeMapper[payload.name] !== payload.code
+    ) {
+        throw new Error('Invalid semester name and code combination.')
+    }
+    const result = await AcademicSemester.findOneAndUpdate(
+        { _id: id },
+        payload,
+        {
+            new: true,
+            runValidators: true,
+        },
+    )
+    return result
+}
+
+export const AcademicSemesterServices = {
+    createAcademicSemesterIntoDB,
+    getAllAcademicSemestersFromDB,
+    getSingleAcademicSemesterFromDB,
+    updateAcademicSemesterIntoDB,
+}
