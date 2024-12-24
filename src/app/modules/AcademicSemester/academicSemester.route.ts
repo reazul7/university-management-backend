@@ -22,7 +22,7 @@ router.patch(
     validateRequest(
         AcademicSemesterValidation.updateAcademicSemesterValidation,
     ),
-    AcademicSemesterControllers.getSingleAcademicSemester,
+    AcademicSemesterControllers.updateAcademicSemester,
 )
 
 export const AcademicSemesterRoutes = router
