@@ -54,7 +54,7 @@ const createStudentValidationSchema = z.object({
                 'christian',
                 'others',
             ]),
-            dateOfBirth: z.date(),
+            dateOfBirth: z.string(),
             email: z.string().email(),
             contactNumber: z
                 .string()
@@ -80,6 +80,7 @@ const createStudentValidationSchema = z.object({
             permanentAddress: z.string().max(200).min(1),
             guardian: guardianValidationSchema,
             localGuardian: localGuardianValidationSchema,
+            admissionSemester: z.string(),
             profileImgUrl: z.string().url().optional(),
         }),
     }),
