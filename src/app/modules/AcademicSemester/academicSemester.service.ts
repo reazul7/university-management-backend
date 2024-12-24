@@ -1,8 +1,12 @@
-import { TAcademicSemesterCode } from './academicSemester.interface'
+import { AcademicSemesterNameCodeMapper } from './academicSemester.constant'
+import { TAcademicSemester } from './academicSemester.interface'
 import { AcademicSemester } from './academicSemester.model'
 
-const createAcademicSemesterIntoDB = async (payLoad: TAcademicSemesterCode) => {
-    const result = await AcademicSemester.create(payLoad)
+const createAcademicSemesterIntoDB = async (payload: TAcademicSemester) => {
+    if(AcademicSemesterNameCodeMapper[payload.name] !== payload.code){
+        throw new Error('Invalid semester name and code combination.')
+    }
+    const result = await AcademicSemester.create(payload)
     return result
 }
 

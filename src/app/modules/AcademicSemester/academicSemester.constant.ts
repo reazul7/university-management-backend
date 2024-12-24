@@ -24,3 +24,9 @@ export const AcademicSemesterName: TAcademicSemesterName[] = [
     'Fall',
 ]
 export const AcademicSemesterCode: TAcademicSemesterCode[] = ['01', '02', '03']
+
+export const AcademicSemesterNameCodeMapper = {
+    Spring: '01',
+    Summer: '02',
+    Fall: '03',
+}

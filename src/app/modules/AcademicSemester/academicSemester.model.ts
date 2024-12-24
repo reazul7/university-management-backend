@@ -17,6 +17,18 @@ const academicSemesterSchema = new Schema<TAcademicSemester>(
     { timestamps: true },
 )
 
+academicSemesterSchema.pre('save', async function(next){
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const academicSemester = this
+    const isSemesterExists = await AcademicSemester.findOne(
+        { name: academicSemester.name, year: academicSemester.year },
+    )
+    if (isSemesterExists) {
+        throw new Error('Academic Semester already exists for the given year and name.')
+    }
+    next()
+})
+
 export const AcademicSemester = model<TAcademicSemester>(
     'AcademicSemester',
     academicSemesterSchema,
