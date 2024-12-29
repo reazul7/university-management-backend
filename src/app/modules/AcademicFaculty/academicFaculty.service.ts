@@ -1,6 +1,8 @@
 import { Types } from 'mongoose'
 import { TAcademicFaculty } from './academicFaculty.interface'
 import { AcademicFaculty } from './academicFaculty.model'
+import { StatusCodes } from 'http-status-codes'
+import AppError from '../../errors/AppError'
 
 const createAcademicFacultyIntoDB = async (payload: string) => {
     const result = await AcademicFaculty.create(payload)
@@ -23,7 +25,7 @@ const updateAcademicFacultyIntoDB = async (
 ) => {
     // Check if the provided ID is valid
     if (!Types.ObjectId.isValid(id)) {
-        throw new Error('Invalid Academic Faculty ID')
+        throw new AppError(StatusCodes.NOT_FOUND, 'Invalid Academic Faculty ID')
     }
 
     const result = await AcademicFaculty.findOneAndUpdate(
