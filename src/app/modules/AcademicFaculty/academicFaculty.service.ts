@@ -1,3 +1,4 @@
+import { Types } from 'mongoose'
 import { TAcademicFaculty } from './academicFaculty.interface'
 import { AcademicFaculty } from './academicFaculty.model'
 
@@ -20,6 +21,11 @@ const updateAcademicFacultyIntoDB = async (
     id: string,
     payload: Partial<TAcademicFaculty>,
 ) => {
+    // Check if the provided ID is valid
+    if (!Types.ObjectId.isValid(id)) {
+        throw new Error('Invalid Academic Faculty ID')
+    }
+
     const result = await AcademicFaculty.findOneAndUpdate(
         { _id: id },
         payload,
