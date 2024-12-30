@@ -1,6 +1,8 @@
 import { model, Schema } from 'mongoose'
 import { TAcademicDepartment } from './academicDepartment.interface'
 import { AcademicFaculty } from '../AcademicFaculty/academicFaculty.model'
+import AppError from '../../errors/AppError'
+import { StatusCodes } from 'http-status-codes'
 
 const academicDepartmentSchema = new Schema<TAcademicDepartment>(
     {
@@ -17,7 +19,7 @@ academicDepartmentSchema.pre('save', async function (next) {
     // check academic faculty existence
     const academicFaculty = await AcademicFaculty.findById(this.academicFaculty)
     if (!academicFaculty) {
-        throw new Error('Invalid academic faculty ID')
+        throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid academic faculty ID')
     }
     
     // check duplicate department name
@@ -25,7 +27,7 @@ academicDepartmentSchema.pre('save', async function (next) {
         name: this.name,
     })
     if (isDepartmentExist) {
-        throw new Error('Academic department already exists')
+        throw new AppError(StatusCodes.CONFLICT, 'Academic department already exists')
     }
     next()
 })

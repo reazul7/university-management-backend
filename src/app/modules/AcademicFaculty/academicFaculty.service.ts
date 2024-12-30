@@ -17,7 +17,7 @@ const getAllAcademicFacultiesFromDB = async () => {
 const getSingleAcademicFacultyFromDB = async (id: string) => {
     // Check if the provided ID is valid
     if (!Types.ObjectId.isValid(id)) {
-        throw new AppError(StatusCodes.NOT_FOUND, 'Invalid Academic Faculty ID')
+        throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid Academic Faculty ID')
     }
     const result = await AcademicFaculty.findById(id)
     if(!result) throw new AppError(StatusCodes.NOT_FOUND, 'Academic Faculty not found')
@@ -30,7 +30,7 @@ const updateAcademicFacultyIntoDB = async (
 ) => {
     // Check if the provided ID is valid
     if (!Types.ObjectId.isValid(id)) {
-        throw new AppError(StatusCodes.NOT_FOUND, 'Invalid Academic Faculty ID')
+        throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid Academic Faculty ID')
     }
 
     const result = await AcademicFaculty.findOneAndUpdate(
