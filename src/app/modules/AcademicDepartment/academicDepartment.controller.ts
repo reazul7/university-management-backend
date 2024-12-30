@@ -26,8 +26,7 @@ const getAllAcademicDepartments = catchAsync(async (req, res) => {
 
 const getSingleAcademicDepartment = catchAsync(async (req, res) => {
     const { academicDepartmentId } = req.params
-    const result =
-        await AcademicDepartmentServices.getSingleAcademicDepartmentFromDB(academicDepartmentId)
+    const result = await AcademicDepartmentServices.getSingleAcademicDepartmentFromDB(academicDepartmentId)
 
     sendResponse(res, {
         statusCode: 200,

@@ -21,11 +21,7 @@ const getSingleAcademicSemesterFromDB = async (id: string) => {
 }
 
 const updateAcademicSemesterIntoDB = async (id: string, payload: Partial<TAcademicSemester>) => {
-    if (
-        payload.name &&
-        payload.code &&
-        AcademicSemesterNameCodeMapper[payload.name] !== payload.code
-    ) {
+    if (payload.name && payload.code && AcademicSemesterNameCodeMapper[payload.name] !== payload.code) {
         throw new Error('Invalid semester name and code combination.')
     }
 
@@ -40,9 +36,7 @@ const updateAcademicSemesterIntoDB = async (id: string, payload: Partial<TAcadem
         })
 
         if (existingSemester) {
-            throw new Error(
-                'An academic semester with the same name, code, and year already exists.',
-            )
+            throw new Error('An academic semester with the same name, code, and year already exists.')
         }
     }
 

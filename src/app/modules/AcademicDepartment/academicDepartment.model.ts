@@ -32,7 +32,4 @@ academicDepartmentSchema.pre('save', async function (next) {
     next()
 })
 
-export const AcademicDepartment = model<TAcademicDepartment>(
-    'AcademicDepartment',
-    academicDepartmentSchema,
-)
+export const AcademicDepartment = model<TAcademicDepartment>('AcademicDepartment', academicDepartmentSchema)

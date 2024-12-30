@@ -23,10 +23,7 @@ const getSingleAcademicDepartmentFromDB = async (id: string) => {
     return result
 }
 
-const updateAcademicDepartmentIntoDB = async (
-    id: string,
-    payload: Partial<TAcademicDepartment>,
-) => {
+const updateAcademicDepartmentIntoDB = async (id: string, payload: Partial<TAcademicDepartment>) => {
     // Check if the provided ID is valid
     if (!Types.ObjectId.isValid(id)) {
         throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid Academic Department ID')

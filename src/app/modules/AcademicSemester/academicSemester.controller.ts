@@ -25,8 +25,7 @@ const getAllAcademicSemesters = catchAsync(async (req, res) => {
 })
 const getSingleAcademicSemester = catchAsync(async (req, res) => {
     const { academicSemesterId } = req.params
-    const result =
-        await AcademicSemesterServices.getSingleAcademicSemesterFromDB(academicSemesterId)
+    const result = await AcademicSemesterServices.getSingleAcademicSemesterFromDB(academicSemesterId)
     sendResponse(res, {
         statusCode: StatusCodes.OK,
         success: true,
@@ -36,10 +35,7 @@ const getSingleAcademicSemester = catchAsync(async (req, res) => {
 })
 const updateAcademicSemester = catchAsync(async (req, res) => {
     const { academicSemesterId } = req.params
-    const result = await AcademicSemesterServices.updateAcademicSemesterIntoDB(
-        academicSemesterId,
-        req.body,
-    )
+    const result = await AcademicSemesterServices.updateAcademicSemesterIntoDB(academicSemesterId, req.body)
     sendResponse(res, {
         statusCode: StatusCodes.OK,
         success: true,
