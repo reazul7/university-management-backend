@@ -32,4 +32,22 @@ academicDepartmentSchema.pre('save', async function (next) {
     next()
 })
 
+academicDepartmentSchema.pre('findOneAndUpdate', async function (next) {
+    const query = this.getQuery();
+    // check academic faculty existence
+    const academicDepartment = await AcademicDepartment.findOne(query)
+    if (!academicDepartment) {
+        throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid Academic Department ID')
+    }
+
+    // check duplicate department name
+    const isDepartmentExist = await AcademicDepartment.findOne({
+        name: query.name,
+    })
+    if (isDepartmentExist) {
+        throw new AppError(StatusCodes.CONFLICT, 'Academic department already exists')
+    }
+    next()
+})
+
 export const AcademicDepartment = model<TAcademicDepartment>('AcademicDepartment', academicDepartmentSchema)

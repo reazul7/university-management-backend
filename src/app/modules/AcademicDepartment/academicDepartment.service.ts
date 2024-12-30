@@ -20,6 +20,7 @@ const getSingleAcademicDepartmentFromDB = async (id: string) => {
         throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid Academic Department ID')
     }
     const result = await AcademicDepartment.findById(id).populate('academicFaculty')
+    if (!result) throw new AppError(StatusCodes.NOT_FOUND, 'Academic Department not found')
     return result
 }
 
@@ -28,8 +29,8 @@ const updateAcademicDepartmentIntoDB = async (id: string, payload: Partial<TAcad
     if (!Types.ObjectId.isValid(id)) {
         throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid Academic Department ID')
     }
-
     const result = await AcademicDepartment.findOneAndUpdate({ _id: id }, payload, { new: true })
+    if (!result) throw new AppError(StatusCodes.NOT_FOUND, 'Academic Department not found')
     return result
 }
 
