@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import mongoose from 'mongoose'
 import config from '../../config'
 import { AcademicSemester } from '../AcademicSemester/academicSemester.model'
 import { TStudent } from '../Student/student.interface'
@@ -5,6 +7,8 @@ import { Student } from '../Student/student.model'
 import { TUser } from './user.interface'
 import { User } from './user.model'
 import { generateStudentId } from './user.utils'
+import AppError from '../../errors/AppError'
+import { StatusCodes } from 'http-status-codes'
 
 const createStudentIntoDB = async (password: string, payload: TStudent) => {
     // create a user object
@@ -17,18 +21,39 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
     const admissionSemester = await AcademicSemester.findById(
         payload.admissionSemester,
     )
-    userData.id = await generateStudentId(admissionSemester)
 
-    // create a userData
-    const newUser = await User.create(userData)
+    const session = await mongoose.startSession()
 
-    // create a student
-    if (Object.keys(newUser).length) {
-        payload.id = newUser.id
-        payload.user = newUser._id
+    try {
+        session.startTransaction()
+        userData.id = await generateStudentId(admissionSemester)
 
-        const newStudent = await Student.create(payload)
+        // create a user [transaction-1]
+        const newUser = await User.create([userData], { session })
+
+        if (!newUser.length) {
+            throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create user')
+        }
+
+        // create a student [transaction-1]
+        payload.id = newUser[0].id
+        payload.user = newUser[0]._id
+
+        const newStudent = await Student.create([payload], { session })
+
+        if (!newStudent.length) {
+            throw new AppError(
+                StatusCodes.BAD_REQUEST,
+                'Failed to create student',
+            )
+        }
+        await session.commitTransaction()
+        await session.endSession()
         return newStudent
+    } catch (error: any) {
+        await session.abortTransaction()
+        await session.endSession()
+        throw new Error(error)
     }
 }
 
