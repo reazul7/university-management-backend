@@ -20,7 +20,4 @@ academicFacultySchema.pre('save', async function () {
     }
 })
 
-export const AcademicFaculty = model<TAcademicFaculty>(
-    'AcademicFaculty',
-    academicFacultySchema,
-)
+export const AcademicFaculty = model<TAcademicFaculty>('AcademicFaculty', academicFacultySchema)

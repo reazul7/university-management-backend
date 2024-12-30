@@ -19,8 +19,7 @@ const getSingleAcademicDepartmentFromDB = async (id: string) => {
     if (!Types.ObjectId.isValid(id)) {
         throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid Academic Department ID')
     }
-    const result =
-        await AcademicDepartment.findById(id).populate('academicFaculty')
+    const result = await AcademicDepartment.findById(id).populate('academicFaculty')
     return result
 }
 
@@ -33,11 +32,7 @@ const updateAcademicDepartmentIntoDB = async (
         throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid Academic Department ID')
     }
 
-    const result = await AcademicDepartment.findOneAndUpdate(
-        { _id: id },
-        payload,
-        { new: true },
-    )
+    const result = await AcademicDepartment.findOneAndUpdate({ _id: id }, payload, { new: true })
     return result
 }
 

@@ -21,7 +21,7 @@ academicDepartmentSchema.pre('save', async function (next) {
     if (!academicFaculty) {
         throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid academic faculty ID')
     }
-    
+
     // check duplicate department name
     const isDepartmentExist = await AcademicDepartment.findOne({
         name: this.name,

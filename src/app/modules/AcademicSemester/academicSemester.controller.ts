@@ -4,9 +4,7 @@ import catchAsync from '../../utils/catchAsync'
 import { AcademicSemesterServices } from './academicSemester.service'
 
 const createAcademicSemester = catchAsync(async (req, res) => {
-    const result = await AcademicSemesterServices.createAcademicSemesterIntoDB(
-        req.body,
-    )
+    const result = await AcademicSemesterServices.createAcademicSemesterIntoDB(req.body)
 
     sendResponse(res, {
         statusCode: StatusCodes.OK,
@@ -17,8 +15,7 @@ const createAcademicSemester = catchAsync(async (req, res) => {
 })
 
 const getAllAcademicSemesters = catchAsync(async (req, res) => {
-    const result =
-        await AcademicSemesterServices.getAllAcademicSemestersFromDB()
+    const result = await AcademicSemesterServices.getAllAcademicSemestersFromDB()
     sendResponse(res, {
         statusCode: StatusCodes.OK,
         success: true,
@@ -29,9 +26,7 @@ const getAllAcademicSemesters = catchAsync(async (req, res) => {
 const getSingleAcademicSemester = catchAsync(async (req, res) => {
     const { academicSemesterId } = req.params
     const result =
-        await AcademicSemesterServices.getSingleAcademicSemesterFromDB(
-            academicSemesterId,
-        )
+        await AcademicSemesterServices.getSingleAcademicSemesterFromDB(academicSemesterId)
     sendResponse(res, {
         statusCode: StatusCodes.OK,
         success: true,

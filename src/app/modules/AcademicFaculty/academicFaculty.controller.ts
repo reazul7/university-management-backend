@@ -4,9 +4,7 @@ import sendResponse from '../../utils/sendResponse'
 import { AcademicFacultyServices } from './academicFaculty.service'
 
 const createAcademicFaculty = catchAsync(async (req, res) => {
-    const result = await AcademicFacultyServices.createAcademicFacultyIntoDB(
-        req.body,
-    )
+    const result = await AcademicFacultyServices.createAcademicFacultyIntoDB(req.body)
 
     sendResponse(res, {
         statusCode: StatusCodes.OK,
@@ -29,10 +27,7 @@ const getAllAcademicFaculties = catchAsync(async (req, res) => {
 
 const getSingleAcademicFaculty = catchAsync(async (req, res) => {
     const { academicFacultyId } = req.params
-    const result =
-        await AcademicFacultyServices.getSingleAcademicFacultyFromDB(
-            academicFacultyId,
-        )
+    const result = await AcademicFacultyServices.getSingleAcademicFacultyFromDB(academicFacultyId)
 
     sendResponse(res, {
         statusCode: StatusCodes.OK,

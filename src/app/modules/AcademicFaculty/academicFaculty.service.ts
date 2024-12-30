@@ -20,28 +20,21 @@ const getSingleAcademicFacultyFromDB = async (id: string) => {
         throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid Academic Faculty ID')
     }
     const result = await AcademicFaculty.findById(id)
-    if(!result) throw new AppError(StatusCodes.NOT_FOUND, 'Academic Faculty not found')
+    if (!result) throw new AppError(StatusCodes.NOT_FOUND, 'Academic Faculty not found')
     return result
 }
 
-const updateAcademicFacultyIntoDB = async (
-    id: string,
-    payload: Partial<TAcademicFaculty>,
-) => {
+const updateAcademicFacultyIntoDB = async (id: string, payload: Partial<TAcademicFaculty>) => {
     // Check if the provided ID is valid
     if (!Types.ObjectId.isValid(id)) {
         throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid Academic Faculty ID')
     }
 
-    const result = await AcademicFaculty.findOneAndUpdate(
-        { _id: id },
-        payload,
-        {
-            new: true,
-            runValidators: true,
-        },
-    )
-    if(!result) throw new AppError(StatusCodes.NOT_FOUND, 'Academic Faculty not found')
+    const result = await AcademicFaculty.findOneAndUpdate({ _id: id }, payload, {
+        new: true,
+        runValidators: true,
+    })
+    if (!result) throw new AppError(StatusCodes.NOT_FOUND, 'Academic Faculty not found')
     return result
 }
 

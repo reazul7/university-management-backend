@@ -47,13 +47,7 @@ const createStudentValidationSchema = z.object({
         student: z.object({
             name: userNameValidationSchema,
             gender: z.enum(['male', 'female', 'other']),
-            religion: z.enum([
-                'muslim',
-                'hindu',
-                'buddhist',
-                'christian',
-                'others',
-            ]),
+            religion: z.enum(['muslim', 'hindu', 'buddhist', 'christian', 'others']),
             dateOfBirth: z.string(),
             email: z.string().email(),
             contactNumber: z
@@ -66,16 +60,7 @@ const createStudentValidationSchema = z.object({
                 .max(15)
                 .min(10)
                 .regex(/^[0-9]+$/),
-            bloodGroup: z.enum([
-                'A+',
-                'A-',
-                'B+',
-                'B-',
-                'AB+',
-                'AB-',
-                'O+',
-                'O-',
-            ]),
+            bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
             presentAddress: z.string().max(200).min(1),
             permanentAddress: z.string().max(200).min(1),
             guardian: guardianValidationSchema,

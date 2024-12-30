@@ -20,10 +20,7 @@ const getSingleAcademicSemesterFromDB = async (id: string) => {
     return result
 }
 
-const updateAcademicSemesterIntoDB = async (
-    id: string,
-    payload: Partial<TAcademicSemester>,
-) => {
+const updateAcademicSemesterIntoDB = async (id: string, payload: Partial<TAcademicSemester>) => {
     if (
         payload.name &&
         payload.code &&
@@ -50,14 +47,10 @@ const updateAcademicSemesterIntoDB = async (
     }
 
     // Proceed with the update
-    const result = await AcademicSemester.findOneAndUpdate(
-        { _id: id },
-        payload,
-        {
-            new: true,
-            runValidators: true,
-        },
-    )
+    const result = await AcademicSemester.findOneAndUpdate({ _id: id }, payload, {
+        new: true,
+        runValidators: true,
+    })
     return result
 }
 

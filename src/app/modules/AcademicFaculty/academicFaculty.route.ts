@@ -6,10 +6,7 @@ import { AcademicFacultyController } from './academicFaculty.controller'
 const router = express.Router()
 
 router.get('/', AcademicFacultyController.getAllAcademicFaculties)
-router.get(
-    '/:academicFacultyId',
-    AcademicFacultyController.getSingleAcademicFaculty,
-)
+router.get('/:academicFacultyId', AcademicFacultyController.getSingleAcademicFaculty)
 router.post(
     '/create-academic-faculty',
     validateRequest(AcademicFacultyValidation.academicFacultyValidation),

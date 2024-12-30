@@ -18,9 +18,7 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
     userData.password = password || (config.default_password as string)
 
     userData.role = 'student'
-    const admissionSemester = await AcademicSemester.findById(
-        payload.admissionSemester,
-    )
+    const admissionSemester = await AcademicSemester.findById(payload.admissionSemester)
 
     const session = await mongoose.startSession()
 
@@ -42,10 +40,7 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
         const newStudent = await Student.create([payload], { session })
 
         if (!newStudent.length) {
-            throw new AppError(
-                StatusCodes.BAD_REQUEST,
-                'Failed to create student',
-            )
+            throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create student')
         }
         await session.commitTransaction()
         await session.endSession()

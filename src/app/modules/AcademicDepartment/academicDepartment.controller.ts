@@ -3,10 +3,7 @@ import sendResponse from '../../utils/sendResponse'
 import { AcademicDepartmentServices } from './academicDepartment.service'
 
 const createAcademicDepartment = catchAsync(async (req, res) => {
-    const result =
-        await AcademicDepartmentServices.createAcademicDepartmentIntoDB(
-            req.body,
-        )
+    const result = await AcademicDepartmentServices.createAcademicDepartmentIntoDB(req.body)
 
     sendResponse(res, {
         statusCode: 200,
@@ -17,8 +14,7 @@ const createAcademicDepartment = catchAsync(async (req, res) => {
 })
 
 const getAllAcademicDepartments = catchAsync(async (req, res) => {
-    const result =
-        await AcademicDepartmentServices.getAllAcademicDepartmentsFromDB()
+    const result = await AcademicDepartmentServices.getAllAcademicDepartmentsFromDB()
 
     sendResponse(res, {
         statusCode: 200,
@@ -31,9 +27,7 @@ const getAllAcademicDepartments = catchAsync(async (req, res) => {
 const getSingleAcademicDepartment = catchAsync(async (req, res) => {
     const { academicDepartmentId } = req.params
     const result =
-        await AcademicDepartmentServices.getSingleAcademicDepartmentFromDB(
-            academicDepartmentId,
-        )
+        await AcademicDepartmentServices.getSingleAcademicDepartmentFromDB(academicDepartmentId)
 
     sendResponse(res, {
         statusCode: 200,
@@ -45,11 +39,10 @@ const getSingleAcademicDepartment = catchAsync(async (req, res) => {
 
 const updateAcademicDepartment = catchAsync(async (req, res) => {
     const { academicDepartmentId } = req.params
-    const result =
-        await AcademicDepartmentServices.updateAcademicDepartmentIntoDB(
-            academicDepartmentId,
-            req.body,
-        )
+    const result = await AcademicDepartmentServices.updateAcademicDepartmentIntoDB(
+        academicDepartmentId,
+        req.body,
+    )
 
     sendResponse(res, {
         statusCode: 200,
