@@ -3,10 +3,7 @@ import { User } from './user.model'
 
 const findLastStudentIdForSemester = async (year: string, code: string) => {
     // Find the last student ID for the specific year and semester code
-    const lastStudentId = await User.findOne(
-        { role: 'student', id: { $regex: `^${year}${code}` } },
-        { id: 1 },
-    )
+    const lastStudentId = await User.findOne({ role: 'student', id: { $regex: `^${year}${code}` } }, { id: 1 })
         .sort({ createdAt: -1 })
         .lean()
     return lastStudentId?.id ? lastStudentId.id : undefined

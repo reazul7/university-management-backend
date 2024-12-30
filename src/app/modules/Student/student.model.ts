@@ -1,12 +1,5 @@
 import { model, Schema } from 'mongoose'
-import {
-    TGuardian,
-    TLocalGuardian,
-    TStudent,
-    StudentMethods,
-    StudentModel,
-    TUserName,
-} from './student.interface'
+import { TGuardian, TLocalGuardian, TStudent, StudentMethods, StudentModel, TUserName } from './student.interface'
 
 const userNameSchema = new Schema<TUserName>({
     firstName: {
