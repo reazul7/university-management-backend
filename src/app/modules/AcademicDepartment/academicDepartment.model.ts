@@ -1,5 +1,6 @@
 import { model, Schema } from 'mongoose'
 import { TAcademicDepartment } from './academicDepartment.interface'
+import { AcademicFaculty } from '../AcademicFaculty/academicFaculty.model'
 
 const academicDepartmentSchema = new Schema<TAcademicDepartment>(
     {
@@ -13,6 +14,13 @@ const academicDepartmentSchema = new Schema<TAcademicDepartment>(
 )
 
 academicDepartmentSchema.pre('save', async function (next) {
+    // check academic faculty existence
+    const academicFaculty = await AcademicFaculty.findById(this.academicFaculty)
+    if (!academicFaculty) {
+        throw new Error('Invalid academic faculty ID')
+    }
+    
+    // check duplicate department name
     const isDepartmentExist = await AcademicDepartment.findOne({
         name: this.name,
     })
