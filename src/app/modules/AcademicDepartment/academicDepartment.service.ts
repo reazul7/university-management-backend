@@ -1,4 +1,4 @@
-import { Types } from 'mongoose'
+// import { Types } from 'mongoose'
 import { TAcademicDepartment } from './academicDepartment.interface'
 import { AcademicDepartment } from './academicDepartment.model'
 import AppError from '../../errors/AppError'
@@ -15,20 +15,12 @@ const getAllAcademicDepartmentsFromDB = async () => {
 }
 
 const getSingleAcademicDepartmentFromDB = async (id: string) => {
-    // Check if the provided ID is valid
-    if (!Types.ObjectId.isValid(id)) {
-        throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid Academic Department ID')
-    }
     const result = await AcademicDepartment.findById(id).populate('academicFaculty')
     if (!result) throw new AppError(StatusCodes.NOT_FOUND, 'Academic Department not found')
     return result
 }
 
 const updateAcademicDepartmentIntoDB = async (id: string, payload: Partial<TAcademicDepartment>) => {
-    // Check if the provided ID is valid
-    if (!Types.ObjectId.isValid(id)) {
-        throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid Academic Department ID')
-    }
     const result = await AcademicDepartment.findOneAndUpdate({ _id: id }, payload, { new: true })
     if (!result) throw new AppError(StatusCodes.NOT_FOUND, 'Academic Department not found')
     return result
