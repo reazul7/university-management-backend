@@ -6,6 +6,7 @@ import { TErrorSource } from '../interface/error'
 import config from '../config'
 import handleZodError from '../errors/handleZodError'
 import handleValidationError from '../errors/handleValidationError'
+import handleCastError from '../errors/handleCastError'
 const globalErrorHandler = (error: any, req: Request, res: Response, next: NextFunction) => {
     let statusCode = error.statusCode || 500
     let message = error.message || 'Something went wrong!'
@@ -27,12 +28,17 @@ const globalErrorHandler = (error: any, req: Request, res: Response, next: NextF
         statusCode = simplifiedError?.statusCode
         message = simplifiedError?.message
         errorSources = simplifiedError?.errorSources
+    } else if (error?.name === 'CastError') {
+        const simplifiedError = handleCastError(error)
+        statusCode = simplifiedError?.statusCode
+        message = simplifiedError?.message
+        errorSources = simplifiedError?.errorSources
     }
 
     return res.status(statusCode).json({
         success: false,
         message,
-        // error: error,
+        error: error,
         errorSources,
         stack: config.node_env === 'development' ? error?.stack : null,
     })
