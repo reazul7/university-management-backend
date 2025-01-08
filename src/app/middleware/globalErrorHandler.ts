@@ -43,16 +43,20 @@ const globalErrorHandler = (error: any, req: Request, res: Response, next: NextF
     } else if (error instanceof AppError) {
         statusCode = error?.statusCode
         message = error?.message
-        errorSources = [{
-            path: '',
-            message: error?.message,
-        }]
+        errorSources = [
+            {
+                path: '',
+                message: error?.message,
+            },
+        ]
     } else if (error instanceof Error) {
         message = error?.message
-        errorSources = [{
-            path: '',
-            message: error?.message,
-        }]
+        errorSources = [
+            {
+                path: '',
+                message: error?.message,
+            },
+        ]
     }
 
     return res.status(statusCode).json({
