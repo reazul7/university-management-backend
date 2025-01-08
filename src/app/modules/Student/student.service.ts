@@ -21,7 +21,7 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
     })
 
     // filtering
-    const excludeFields = ['searchTerm', 'sort', 'limit']
+    const excludeFields = ['searchTerm', 'sort', 'limit', 'page']
     excludeFields.forEach(field => delete queryObj[field])
 
     const filterQuery = searchQuery
@@ -32,18 +32,29 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
             populate: { path: 'academicFaculty' },
         })
 
+    // sorting
     let sort = '-createdAt'
     if (query.sort) {
         sort = query.sort as string
     }
     const sortQuery = filterQuery.sort(sort)
 
+    // paginate area
+    let page = 1
     let limit = 1
+    let skip = 0
+
     if (query.limit) {
-        limit = query.limit as number
+        limit = Number(query.limit)
     }
 
-    const limitQuery = await sortQuery.limit(limit)
+    if (query.page) {
+        page = Number(query.page)
+        skip = (page - 1) * limit
+    }
+
+    const paginateQuery = sortQuery.skip(skip)
+    const limitQuery = await paginateQuery.limit(limit)
     return limitQuery
 }
 
