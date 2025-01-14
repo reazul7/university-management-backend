@@ -6,9 +6,12 @@ import { TStudent } from '../Student/student.interface'
 import { Student } from '../Student/student.model'
 import { TUser } from './user.interface'
 import { User } from './user.model'
-import { generateStudentId } from './user.utils'
+import { generateFacultyId, generateStudentId } from './user.utils'
 import AppError from '../../errors/AppError'
 import { StatusCodes } from 'http-status-codes'
+import { TFaculty } from '../Faculty/faculty.interface'
+import { AcademicDepartment } from '../AcademicDepartment/academicDepartment.model'
+import { Faculty } from '../Faculty/faculty.model'
 
 const createStudentIntoDB = async (password: string, payload: TStudent) => {
     // create a user object
@@ -33,7 +36,7 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
             throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create user')
         }
 
-        // create a student [transaction-1]
+        // create a student [transaction-2]
         payload.id = newUser[0].id
         payload.user = newUser[0]._id
 
@@ -52,4 +55,49 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
     }
 }
 
-export const UserService = { createStudentIntoDB }
+const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
+    // create a user object
+    const userData: Partial<TUser> = {}
+
+    // If the password not provided then use the default password
+    userData.password = password || (config.default_password as string)
+
+    userData.role = 'faculty'
+
+    // find academic department information
+    const academicDepartment = await AcademicDepartment.findById(payload.academicDepartment)
+    if (!academicDepartment) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'Academic department not found')
+    }
+
+    const session = await mongoose.startSession()
+    try {
+        session.startTransaction()
+        userData.id = await generateFacultyId()
+        // create a user [transaction-1]
+        const newUser = await User.create([userData], { session })
+
+        if (!newUser.length) {
+            throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create user')
+        }
+
+        // create a faculty [transaction-]
+        payload.id = newUser[0].id
+        payload.user = newUser[0]._id
+
+        const newFaculty = await Faculty.create([payload], { session })
+
+        if (!newFaculty.length) {
+            throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create faculty')
+        }
+        await session.commitTransaction()
+        await session.endSession()
+        return newFaculty
+    } catch (error: any) {
+        await session.abortTransaction()
+        await session.endSession()
+        throw new Error(error)
+    }
+}
+
+export const UserService = { createStudentIntoDB, createFacultyIntoDB }
