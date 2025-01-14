@@ -1,6 +1,7 @@
 import { TAcademicSemester } from '../AcademicSemester/academicSemester.interface'
 import { User } from './user.model'
 
+// ============================  Student ID  ============================
 const findLastStudentIdForSemester = async (year: string, code: string) => {
     // Find the last student ID for the specific year and semester code
     const lastStudentId = await User.findOne({ role: 'student', id: { $regex: `^${year}${code}` } }, { id: 1 })
@@ -22,7 +23,7 @@ export const generateStudentId = async (payload: TAcademicSemester) => {
     return incrementId
 }
 
-// faculty id
+// ============================  Faculty ID  ============================
 export const findLastFacultyId = async () => {
     // Find the last faculty ID
     const lastFacultyId = await User.findOne({ role: 'faculty' }, { id: 1 }).sort({ createdAt: -1 }).lean()
@@ -38,5 +39,24 @@ export const generateFacultyId = async () => {
     // Increment the ID
     let incrementId = (parseInt(currentId) + 1).toString().padStart(4, '0')
     incrementId = `F${incrementId}`
+    return incrementId
+}
+
+// ============================  Admin ID  ============================
+export const findLastAdminId = async () => {
+    // Find the last admin ID
+    const lastAdminId = await User.findOne({ role: 'admin' }, { id: 1 }).sort({ createdAt: -1 }).lean()
+    return lastAdminId?.id ? lastAdminId.id.substring(2) : undefined
+}
+export const generateAdminId = async () => {
+    let currentId = (0).toString()
+    const lastAdminId = await findLastAdminId()
+    if (lastAdminId) {
+        currentId = lastAdminId.substring(1)
+    }
+
+    // Increment the ID
+    let incrementId = (parseInt(currentId) + 1).toString().padStart(4, '0')
+    incrementId = `A${incrementId}`
     return incrementId
 }
