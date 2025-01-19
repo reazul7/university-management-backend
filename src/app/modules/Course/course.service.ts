@@ -1,4 +1,6 @@
+import { StatusCodes } from 'http-status-codes'
 import QueryBuilder from '../../builder/QueryBuilder'
+import AppError from '../../errors/AppError'
 import { courseSearchableFields } from './course.constant'
 import { TCourse } from './course.interface'
 import { Course } from './course.model'
@@ -27,24 +29,35 @@ const singleCourseFromDB = async (id: string) => {
 const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
     const { preRequisiteCourses, ...courseRemainingData } = payload
 
-    // step-1: Basic course updates info
+    // Basic course updates info
     const updateBasicCourseInfo = await Course.findByIdAndUpdate(id, courseRemainingData, {
         new: true,
         runValidators: true,
     })
+    if (!updateBasicCourseInfo) throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to update course')
 
     // check if any prerequisite courses have been updated
     if (preRequisiteCourses && preRequisiteCourses.length > 0) {
         // filter out deleted courses
-        const deletedPreRequisites = preRequisiteCourses
-            .filter(element => element.course && element.isDelete)
-            .map(element => element.course)
-        const deletedPreRequisiteCourses = await Course.findByIdAndUpdate(id, {
-            $pull: { preRequisiteCourses: { course: { $in: deletedPreRequisites } } },
+        const deletedPreRequisiteCourses = preRequisiteCourses
+            ?.filter(element => element.course && element.isDelete)
+            ?.map(element => element.course)
+        const deletedPreRequisiteCoursesData = await Course.findByIdAndUpdate(id, {
+            $pull: { preRequisiteCourses: { course: { $in: deletedPreRequisiteCourses } } },
         })
-        console.log(deletedPreRequisiteCourses)
+        if (!deletedPreRequisiteCoursesData) throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to update course')
+
+        // filter out new preRequisite courses
+        const newPreRequisiteCourses = preRequisiteCourses?.filter(element => element.course && !element.isDelete)
+
+        const newPreRequisiteCoursesData = await Course.findByIdAndUpdate(id, {
+            $addToSet: { preRequisiteCourses: { $each: newPreRequisiteCourses } },
+        })
+        if (!newPreRequisiteCoursesData) throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to update course')
     }
-    return updateBasicCourseInfo
+
+    const result = await Course.findById(id).populate('preRequisiteCourses.course')
+    return result
 }
 
 const deleteCourseFromDB = async (id: string) => {
