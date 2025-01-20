@@ -4,6 +4,7 @@ import AppError from '../../errors/AppError'
 import { courseSearchableFields } from './course.constant'
 import { TCourse } from './course.interface'
 import { Course } from './course.model'
+import mongoose from 'mongoose'
 
 const createCourseIntoDB = async (payload: TCourse) => {
     const result = await Course.create(payload)
@@ -29,34 +30,52 @@ const singleCourseFromDB = async (id: string) => {
 const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
     const { preRequisiteCourses, ...courseRemainingData } = payload
 
-    // Basic course updates info
-    const updateBasicCourseInfo = await Course.findByIdAndUpdate(id, courseRemainingData, {
-        new: true,
-        runValidators: true,
-    })
-    if (!updateBasicCourseInfo) throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to update course')
+    const session = await mongoose.startSession()
+    try {
+        session.startTransaction()
 
-    // check if any prerequisite courses have been updated
-    if (preRequisiteCourses && preRequisiteCourses.length > 0) {
-        // filter out deleted courses
-        const deletedPreRequisiteCourses = preRequisiteCourses
-            ?.filter(element => element.course && element.isDelete)
-            ?.map(element => element.course)
-        const deletedPreRequisiteCoursesData = await Course.findByIdAndUpdate(id, {
-            $pull: { preRequisiteCourses: { course: { $in: deletedPreRequisiteCourses } } },
+        // Basic course updates info
+        const updateBasicCourseInfo = await Course.findByIdAndUpdate(id, courseRemainingData, {
+            new: true,
+            runValidators: true,
+            session,
         })
-        if (!deletedPreRequisiteCoursesData) throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to update course')
+        if (!updateBasicCourseInfo) throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to update course')
 
-        // filter out new preRequisite courses
-        const newPreRequisiteCourses = preRequisiteCourses?.filter(element => element.course && !element.isDelete)
-        const newPreRequisiteCoursesData = await Course.findByIdAndUpdate(id, {
-            $addToSet: { preRequisiteCourses: { $each: newPreRequisiteCourses } },
-        })
-        if (!newPreRequisiteCoursesData) throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to update course')
+        // check if any prerequisite courses have been updated
+        if (preRequisiteCourses && preRequisiteCourses.length > 0) {
+            // filter out deleted courses
+            const deletedPreRequisiteCourses = preRequisiteCourses
+                ?.filter(element => element.course && element.isDelete)
+                ?.map(element => element.course)
+            const deletedPreRequisiteCoursesData = await Course.findByIdAndUpdate(
+                id,
+                { $pull: { preRequisiteCourses: { course: { $in: deletedPreRequisiteCourses } } } },
+                { new: true, runValidators: true, session },
+            )
+            if (!deletedPreRequisiteCoursesData) throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to update course')
+
+            // filter out new preRequisite courses
+            const newPreRequisiteCourses = preRequisiteCourses?.filter(element => element.course && !element.isDelete)
+            const newPreRequisiteCoursesData = await Course.findByIdAndUpdate(
+                id,
+                { $addToSet: { preRequisiteCourses: { $each: newPreRequisiteCourses } } },
+                { new: true, runValidators: true, session },
+            )
+            if (!newPreRequisiteCoursesData) throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to update course')
+        }
+
+        await session.commitTransaction()
+        await session.endSession()
+        const result = await Course.findById(id).populate('preRequisiteCourses.course')
+        return result
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+        await session.abortTransaction()
+        await session.endSession()
+        throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to update course')
     }
-
-    const result = await Course.findById(id).populate('preRequisiteCourses.course')
-    return result
 }
 
 const deleteCourseFromDB = async (id: string) => {
