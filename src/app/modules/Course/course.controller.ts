@@ -1,3 +1,4 @@
+import { StatusCodes } from 'http-status-codes'
 import catchAsync from '../../utils/catchAsync'
 import sendResponse from '../../utils/sendResponse'
 import { CourseServices } from './course.service'
@@ -6,7 +7,7 @@ const createCourse = catchAsync(async (req, res) => {
     const result = await CourseServices.createCourseIntoDB(req.body)
 
     sendResponse(res, {
-        statusCode: 201,
+        statusCode: StatusCodes.OK,
         success: true,
         message: 'Course created successfully',
         data: result,
@@ -17,7 +18,7 @@ const getAllCourses = catchAsync(async (req, res) => {
     const result = await CourseServices.getAllCoursesFromDB(req.query)
 
     sendResponse(res, {
-        statusCode: 200,
+        statusCode: StatusCodes.OK,
         success: true,
         message: 'Courses fetched successfully',
         data: result,
@@ -29,7 +30,7 @@ const getSingleCourse = catchAsync(async (req, res) => {
     const result = await CourseServices.singleCourseFromDB(courseId)
 
     sendResponse(res, {
-        statusCode: 200,
+        statusCode: StatusCodes.OK,
         success: true,
         message: 'Course fetched successfully',
         data: result,
@@ -42,7 +43,7 @@ const updateCourse = catchAsync(async (req, res) => {
     const result = await CourseServices.updateCourseIntoDB(courseId, course)
 
     sendResponse(res, {
-        statusCode: 200,
+        statusCode: StatusCodes.OK,
         success: true,
         message: 'Course updated successfully',
         data: result,
@@ -54,7 +55,7 @@ const deleteCourse = catchAsync(async (req, res) => {
     const result = await CourseServices.deleteCourseFromDB(courseId)
 
     sendResponse(res, {
-        statusCode: 200,
+        statusCode: StatusCodes.OK,
         success: true,
         message: 'Course deleted successfully',
         data: result,
