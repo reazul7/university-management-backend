@@ -1,13 +1,13 @@
 import express from 'express'
 import validateRequest from '../../middleware/validateRequest'
 import { facultyValidations } from './faculty.validation'
-import { FacultyController } from './faculty.controller'
+import { FacultyControllers } from './faculty.controller'
 
 const router = express.Router()
 
-router.get('/', FacultyController.getAllFaculties)
-router.get('/:id', FacultyController.getSingleFaculty)
-router.delete('/:id', FacultyController.deleteFaculty)
-router.patch('/:id', validateRequest(facultyValidations.updateFacultyValidationSchema), FacultyController.updateFaculty)
+router.get('/', FacultyControllers.getAllFaculties)
+router.get('/:id', FacultyControllers.getSingleFaculty)
+router.delete('/:id', FacultyControllers.deleteFaculty)
+router.patch('/:id', validateRequest(facultyValidations.updateFacultyValidationSchema), FacultyControllers.updateFaculty)
 
 export const FacultyRoutes = router

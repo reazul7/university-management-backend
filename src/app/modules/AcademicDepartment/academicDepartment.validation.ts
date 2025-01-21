@@ -30,7 +30,7 @@ const updateAcademicDepartmentValidationSchema = z.object({
     }),
 })
 
-export const AcademicDepartmentValidation = {
+export const AcademicDepartmentValidations = {
     createAcademicDepartmentValidationSchema,
     updateAcademicDepartmentValidationSchema,
 }

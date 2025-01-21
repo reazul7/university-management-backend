@@ -10,4 +10,4 @@ const userSchemaValidation = z.object({
         .optional(),
 })
 
-export const UserValidation = { userSchemaValidation }
+export const UserValidations = { userSchemaValidation }

@@ -6,4 +6,4 @@ const academicFacultyValidation = z.object({
     }),
 })
 
-export const AcademicFacultyValidation = { academicFacultyValidation }
+export const AcademicFacultyValidations = { academicFacultyValidation }

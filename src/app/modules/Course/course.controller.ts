@@ -88,7 +88,7 @@ const removeFacultiesFromCourse = catchAsync(async (req, res) => {
     })
 })
 
-export const CourseController = {
+export const CourseControllers = {
     createCourse,
     getAllCourses,
     getSingleCourse,

@@ -49,7 +49,7 @@ const updateAcademicFaculty = catchAsync(async (req, res) => {
     })
 })
 
-export const AcademicFacultyController = {
+export const AcademicFacultyControllers = {
     createAcademicFaculty,
     getAllAcademicFaculties,
     getSingleAcademicFaculty,

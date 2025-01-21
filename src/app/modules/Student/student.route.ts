@@ -1,17 +1,17 @@
 import express from 'express'
-import { StudentController } from './student.controller'
+import { StudentControllers } from './student.controller'
 import validateRequest from '../../middleware/validateRequest'
 import { studentValidations } from './student.validation'
 
 const router = express.Router()
 
-router.get('/', StudentController.getAllStudents)
-router.get('/:studentId', StudentController.getSingleStudent)
+router.get('/', StudentControllers.getAllStudents)
+router.get('/:studentId', StudentControllers.getSingleStudent)
 router.patch(
     '/:studentId',
     validateRequest(studentValidations.updateStudentValidationSchema),
-    StudentController.updateStudent,
+    StudentControllers.updateStudent,
 )
-router.delete('/:studentId', StudentController.deleteStudent)
+router.delete('/:studentId', StudentControllers.deleteStudent)
 
 export const StudentRoutes = router

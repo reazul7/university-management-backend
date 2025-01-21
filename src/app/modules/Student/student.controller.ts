@@ -49,7 +49,7 @@ const deleteStudent = catchAsync(async (req, res) => {
     })
 })
 
-export const StudentController = {
+export const StudentControllers = {
     getAllStudents,
     getSingleStudent,
     updateStudent,
