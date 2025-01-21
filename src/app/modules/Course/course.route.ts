@@ -17,6 +17,11 @@ router.patch(
     validateRequest(courseValidations.updateCourseValidationSchema),
     CourseController.updateCourse,
 )
+router.put(
+    '/:courseId/assign-faculties',
+    validateRequest(courseValidations.assignFacultiesWithCourseValidationSchema),
+    CourseController.assignFacultiesWithCourse,
+)
 router.delete('/:courseId', CourseController.deleteCourse)
 
 export const CourseRoutes = router

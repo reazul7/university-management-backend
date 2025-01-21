@@ -2,8 +2,8 @@ import { StatusCodes } from 'http-status-codes'
 import QueryBuilder from '../../builder/QueryBuilder'
 import AppError from '../../errors/AppError'
 import { courseSearchableFields } from './course.constant'
-import { TCourse } from './course.interface'
-import { Course } from './course.model'
+import { TCourse, TCourseFaculty } from './course.interface'
+import { Course, CourseFaculty } from './course.model'
 import mongoose from 'mongoose'
 
 const createCourseIntoDB = async (payload: TCourse) => {
@@ -29,7 +29,6 @@ const singleCourseFromDB = async (id: string) => {
 
 const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
     const { preRequisiteCourses, ...courseRemainingData } = payload
-
     const session = await mongoose.startSession()
     try {
         session.startTransaction()
@@ -78,6 +77,15 @@ const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
     }
 }
 
+const assignFacultiesWithCourseIntoDB = async (id: string, payload: Partial<TCourseFaculty>) => {
+    const result = await CourseFaculty.findByIdAndUpdate(
+        id,
+        { course: id, $addToSet: { faculties: { $each: payload } }, },
+        { upsert: true, new: true },
+    )
+    return result
+}
+
 const deleteCourseFromDB = async (id: string) => {
     const result = await Course.findByIdAndUpdate(id, { isDelete: true }, { new: true })
     return result
@@ -88,5 +96,6 @@ export const CourseServices = {
     getAllCoursesFromDB,
     singleCourseFromDB,
     updateCourseIntoDB,
+    assignFacultiesWithCourseIntoDB,
     deleteCourseFromDB,
 }
