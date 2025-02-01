@@ -74,9 +74,7 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     const assignedSchedules = await OfferedCourse.find({ semesterRegistration, faculty, days: { $in: days } }).select(
         'days startTime endTime',
     )
-
     const newSchedule = { days, startTime, endTime }
-
     if (hasTimeConflict(assignedSchedules, newSchedule)) {
         throw new AppError(StatusCodes.CONFLICT, 'This faculty is not available at that time! Choose other time or day')
     }
@@ -85,4 +83,39 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     return result
 }
 
-export const OfferedCourseServices = { createOfferedCourseIntoDB }
+const updateOfferedCourseIntoDB = async (
+    id: string,
+    payload: Pick<TOfferedCourse, 'faculty' | 'days' | 'startTime' | 'endTime'>,
+) => {
+    const { faculty, days, startTime, endTime } = payload
+    // check below id's are exists
+    const isOfferedCourseExist = await OfferedCourse.findById(id)
+    if (!isOfferedCourseExist) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'Offered Course not found')
+    }
+
+    const isFacultyExists = await Faculty.findById(faculty)
+    if (!isFacultyExists) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'This Faculty not found')
+    }
+
+    const semesterRegistration = isOfferedCourseExist.semesterRegistration
+    const semesterRegistrationStatus = await SemesterRegistration.findById(semesterRegistration)
+    if(semesterRegistrationStatus?.status !== 'UPCOMING'){
+        throw new AppError(StatusCodes.BAD_REQUEST, `Cannot update this offered course as it is ${semesterRegistrationStatus?.status}`)
+    }
+
+    // get the schedule of the faculties
+    const assignedSchedules = await OfferedCourse.find({ semesterRegistration, faculty, days: { $in: days } }).select(
+        'days startTime endTime',
+    )
+    const newSchedule = { days, startTime, endTime }
+    if (hasTimeConflict(assignedSchedules, newSchedule)) {
+        throw new AppError(StatusCodes.CONFLICT, 'This faculty is not available at that time! Choose other time or day')
+    }
+
+    const result = await OfferedCourse.findByIdAndUpdate(id, payload, { new: true })
+    return result
+}
+
+export const OfferedCourseServices = { createOfferedCourseIntoDB, updateOfferedCourseIntoDB }

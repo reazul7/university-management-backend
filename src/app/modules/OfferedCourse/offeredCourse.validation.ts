@@ -36,13 +36,22 @@ const createOfferedCourseValidationSchema = z.object({
 })
 
 const updateOfferedCourseValidationSchema = z.object({
-    body: z.object({
-        faculty: z.string().optional(),
-        maxCapacity: z.number().optional(),
-        days: z.enum([...Days] as [string, ...string[]]).optional(),
-        startTime: z.string().optional(),
-        endTime: z.string().optional(),
-    }),
+    body: z
+        .object({
+            faculty: z.string(),
+            maxCapacity: z.number(),
+            days: z.array(z.enum([...Days] as [string, ...string[]])),
+            startTime: timeStringSchema,
+            endTime: timeStringSchema,
+        })
+        .refine(
+            body => {
+                const start = new Date(`1971-01-01T${body.startTime}:00`)
+                const end = new Date(`1971-01-01T${body.endTime}:00`)
+                return end > start
+            },
+            { message: 'Start time should be before End time' },
+        ),
 })
 
 export const OfferedCourseValidations = { createOfferedCourseValidationSchema, updateOfferedCourseValidationSchema }

@@ -14,4 +14,17 @@ const createOfferedCourse = catchAsync(async (req, res) => {
     })
 })
 
-export const OfferedCourseControllers = { createOfferedCourse }
+const updateOfferedCourse = catchAsync(async (req, res) => {
+    const { offeredCourseId } = req.params
+    const offeredCourse = req.body
+    const result = await OfferedCourseServices.updateOfferedCourseIntoDB(offeredCourseId, offeredCourse)
+
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: 'Offered Course updated successfully',
+        data: result,
+    })
+})
+
+export const OfferedCourseControllers = { createOfferedCourse, updateOfferedCourse }
