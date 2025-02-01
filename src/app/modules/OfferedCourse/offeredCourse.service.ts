@@ -7,9 +7,20 @@ import { AcademicFaculty } from '../AcademicFaculty/academicFaculty.model'
 import { AcademicDepartment } from '../AcademicDepartment/academicDepartment.model'
 import { Course } from '../Course/course.model'
 import { Faculty } from '../Faculty/faculty.model'
+import { hasTimeConflict } from './offeredCourse.utils'
 
 const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
-    const { semesterRegistration, academicFaculty, academicDepartment, course, faculty, section } = payload
+    const {
+        semesterRegistration,
+        academicFaculty,
+        academicDepartment,
+        course,
+        faculty,
+        section,
+        days,
+        startTime,
+        endTime,
+    } = payload
     // check below id's are exists
     const isSemesterRegistrationExists = await SemesterRegistration.findById(semesterRegistration)
     if (!isSemesterRegistrationExists) {
@@ -57,6 +68,17 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
             StatusCodes.BAD_REQUEST,
             'This Offered Course already exists with same section in same registered semester',
         )
+    }
+
+    // get the schedule of the faculties
+    const assignedSchedules = await OfferedCourse.find({ semesterRegistration, faculty, days: { $in: days } }).select(
+        'days startTime endTime',
+    )
+
+    const newSchedule = { days, startTime, endTime }
+
+    if (hasTimeConflict(assignedSchedules, newSchedule)) {
+        throw new AppError(StatusCodes.CONFLICT, 'This faculty is not available at that time! Choose other time or day')
     }
 
     const result = await OfferedCourse.create({ ...payload, academicSemester })
