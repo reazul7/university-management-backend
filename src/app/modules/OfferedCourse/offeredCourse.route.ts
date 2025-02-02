@@ -10,11 +10,13 @@ router.post(
     validateRequest(OfferedCourseValidations.createOfferedCourseValidationSchema),
     OfferedCourseControllers.createOfferedCourse,
 )
-// router.get('/', CourseControllers.getAllCourses)
 router.patch(
     '/:offeredCourseId',
     validateRequest(OfferedCourseValidations.updateOfferedCourseValidationSchema),
     OfferedCourseControllers.updateOfferedCourse,
 )
+router.get('/', OfferedCourseControllers.getAllOfferedCourses)
+router.get('/:offeredCourseId', OfferedCourseControllers.getSingleOfferedCourse)
+router.delete('/:offeredCourseId', OfferedCourseControllers.deleteOfferedCourse)
 
 export const OfferedCourseRoutes = router
