@@ -1,4 +1,3 @@
-
 import { StatusCodes } from 'http-status-codes'
 import AppError from '../../errors/AppError'
 import { AcademicSemesterNameCodeMapper } from './academicSemester.constant'
@@ -39,7 +38,10 @@ const updateAcademicSemesterIntoDB = async (id: string, payload: Partial<TAcadem
         })
 
         if (existingSemester) {
-            throw new AppError(StatusCodes.CONFLICT, 'An academic semester with the same name, code, and year already exists.')
+            throw new AppError(
+                StatusCodes.CONFLICT,
+                'An academic semester with the same name, code, and year already exists.',
+            )
         }
     }
 

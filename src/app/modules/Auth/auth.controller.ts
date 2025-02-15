@@ -1,7 +1,7 @@
-import { StatusCodes } from "http-status-codes";
-import catchAsync from "../../utils/catchAsync";
-import sendResponse from "../../utils/sendResponse";
-import { AuthServices } from "./auth.service";
+import { StatusCodes } from 'http-status-codes'
+import catchAsync from '../../utils/catchAsync'
+import sendResponse from '../../utils/sendResponse'
+import { AuthServices } from './auth.service'
 
 const loginUser = catchAsync(async (req, res) => {
     const result = await AuthServices.loginUser(req.body)
@@ -9,7 +9,7 @@ const loginUser = catchAsync(async (req, res) => {
     sendResponse(res, {
         statusCode: StatusCodes.OK,
         success: true,
-        message: "User logged in successfully",
+        message: 'User logged in successfully',
         data: result,
     })
 })
