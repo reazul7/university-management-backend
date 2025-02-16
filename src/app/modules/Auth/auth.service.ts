@@ -1,7 +1,9 @@
 import { StatusCodes } from 'http-status-codes'
 import AppError from '../../errors/AppError'
+import jwt from 'jsonwebtoken'
 import { User } from '../User/user.model'
 import { TLoginUser } from './auth.interface'
+import config from '../../config'
 
 const loginUser = async (payload: TLoginUser) => {
     // check if user is exist
@@ -26,7 +28,14 @@ const loginUser = async (payload: TLoginUser) => {
     if (!(await User.isPasswordMatched(payload?.password, user?.password))) {
         throw new AppError(StatusCodes.UNAUTHORIZED, 'Invalid password')
     }
-    return {}
+
+    // create token and send to the client
+    const jwtPayload = {
+        userId: user,
+        role: user.role,
+    }
+    const accessToken = jwt.sign(jwtPayload, config.jwt_access_secret as string, { expiresIn: '1h' });
+    return { accessToken, needsPasswordChange: user?.needsPasswordChange }
 }
 
 export const AuthServices = { loginUser }
