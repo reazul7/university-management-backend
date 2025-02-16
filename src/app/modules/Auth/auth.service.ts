@@ -7,7 +7,7 @@ const loginUser = async (payload: TLoginUser) => {
     // check if user is exist
     const user = await User.isUserExistByCustomId(payload?.id)
     if (!user) {
-        throw new AppError(StatusCodes.NOT_FOUND, 'User not found')
+        throw new AppError(StatusCodes.NOT_FOUND, 'This user is not found')
     }
 
     // check if the user is already deleted
