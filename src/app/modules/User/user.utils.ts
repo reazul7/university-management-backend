@@ -38,7 +38,7 @@ export const generateFacultyId = async () => {
 
     // Increment the ID
     let incrementId = (parseInt(currentId) + 1).toString().padStart(4, '0')
-    incrementId = `F${incrementId}`
+    incrementId = `F-${incrementId}`
     return incrementId
 }
 
@@ -57,6 +57,6 @@ export const generateAdminId = async () => {
 
     // Increment the ID
     let incrementId = (parseInt(currentId) + 1).toString().padStart(4, '0')
-    incrementId = `A${incrementId}`
+    incrementId = `A-${incrementId}`
     return incrementId
 }
