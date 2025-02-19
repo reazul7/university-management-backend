@@ -15,30 +15,32 @@ const auth = (...requiredRoles: TUserRole[]) => {
         }
         // check the token is valid
         const decoded = jwt.verify(token, config.jwt_access_secret as string) as JwtPayload
-        const {userId, role} = decoded
-
+        const { userId, role, iat } = decoded
 
         // check if user is exist
-    const user = await User.isUserExistByCustomId(userId)
-    if (!user) {
-        throw new AppError(StatusCodes.NOT_FOUND, 'This user is not found')
-    }
+        const user = await User.isUserExistByCustomId(userId)
+        if (!user) {
+            throw new AppError(StatusCodes.NOT_FOUND, 'This user is not found')
+        }
 
-    // check if the user is already deleted
-    const isDeleted = user?.isDeleted
-    if (isDeleted) {
-        throw new AppError(StatusCodes.FORBIDDEN, 'This user is already deleted')
-    }
+        // check if the user is already deleted
+        const isDeleted = user?.isDeleted
+        if (isDeleted) {
+            throw new AppError(StatusCodes.FORBIDDEN, 'This user is already deleted')
+        }
 
-    // check if the user is blocked
-    const userStatus = user?.status
-    if (userStatus === 'blocked') {
-        throw new AppError(StatusCodes.FORBIDDEN, 'This user is already blocked')
-    }
+        // check if the user is blocked
+        const userStatus = user?.status
+        if (userStatus === 'blocked') {
+            throw new AppError(StatusCodes.FORBIDDEN, 'This user is already blocked')
+        }
 
+        if (user.passwordChangeAt && User.isJWTIssuedBeforePasswordChanged(user.passwordChangeAt, iat as number)) {
+            throw new AppError(StatusCodes.UNAUTHORIZED, 'Password has been changed. Please login again.')
+        }
 
         if (requiredRoles && !requiredRoles.includes(role)) {
-            throw new AppError(StatusCodes.FORBIDDEN, 'You are not authorized')
+            throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized')
         }
         req.user = decoded as JwtPayload
         next()
