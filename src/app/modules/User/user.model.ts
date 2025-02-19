@@ -6,8 +6,9 @@ import config from '../../config'
 const userSchema = new Schema<TUser, UserModel>(
     {
         id: { type: String, required: true, unique: true },
-        password: { type: String, required: true },
+        password: { type: String, required: true, select: 0 },
         needsPasswordChange: { type: Boolean, default: true },
+        passwordChangeAt: { type: Date },
         role: {
             type: String,
             enum: ['admin', 'faculty', 'student'],
@@ -40,7 +41,7 @@ userSchema.post('save', function (doc, next) {
 
 // check if user is exist
 userSchema.statics.isUserExistByCustomId = async function (id: string) {
-    return await User.findOne({ id })
+    return await User.findOne({ id }).select('+password')
 }
 
 // check if user password is Matched
