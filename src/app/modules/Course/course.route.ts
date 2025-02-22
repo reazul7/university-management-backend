@@ -2,6 +2,7 @@ import express from 'express'
 import { CourseControllers } from './course.controller'
 import validateRequest from '../../middleware/validateRequest'
 import { courseValidations } from './course.validation'
+import auth from '../../middleware/auth'
 
 const router = express.Router()
 
@@ -10,14 +11,15 @@ router.post(
     validateRequest(courseValidations.createCourseValidationSchema),
     CourseControllers.createCourse,
 )
-router.get('/', CourseControllers.getAllCourses)
+router.get('/', auth('admin', 'faculty', 'student'), CourseControllers.getAllCourses)
 router.get('/:courseId', CourseControllers.getSingleCourse)
 router.patch(
     '/:courseId',
+    auth('admin'),
     validateRequest(courseValidations.updateCourseValidationSchema),
     CourseControllers.updateCourse,
 )
-router.delete('/:courseId', CourseControllers.deleteCourse)
+router.delete('/:courseId', auth('admin'), CourseControllers.deleteCourse)
 router.put(
     '/:courseId/assign-faculties',
     validateRequest(courseValidations.facultiesWithCourseValidationSchema),
