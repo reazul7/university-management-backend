@@ -4,7 +4,8 @@ import sendResponse from '../../utils/sendResponse'
 import catchAsync from '../../utils/catchAsync'
 
 const createStudent = catchAsync(async (req, res) => {
-    const { password, student: studentData } = req.body
+    const { student: studentData } = req.body
+    const password = studentData?.password
     const result = await UserService.createStudentIntoDB(password, studentData)
 
     sendResponse(res, {
@@ -16,7 +17,8 @@ const createStudent = catchAsync(async (req, res) => {
 })
 
 const createFaculty = catchAsync(async (req, res) => {
-    const { password, faculty: facultyData } = req.body
+    const { faculty: facultyData } = req.body
+    const password = facultyData?.password
     const result = await UserService.createFacultyIntoDB(password, facultyData)
 
     sendResponse(res, {
@@ -28,7 +30,8 @@ const createFaculty = catchAsync(async (req, res) => {
 })
 
 const createAdmin = catchAsync(async (req, res) => {
-    const { password, admin: adminData } = req.body
+    const { admin: adminData } = req.body
+    const password = adminData?.password
     const result = await UserService.createAdminIntoDB(password, adminData)
 
     sendResponse(res, {

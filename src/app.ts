@@ -1,15 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import express, { Application, NextFunction, Request, Response } from 'express'
 import cors from 'cors'
-import globalErrorHandler from './app/middleware/globalErrorHandler'
-import notFound from './app/middleware/notFound'
 import router from './app/routes'
+import cookieParser from 'cookie-parser'
+import notFound from './app/middleware/notFound'
+import globalErrorHandler from './app/middleware/globalErrorHandler'
+import express, { Application, NextFunction, Request, Response } from 'express'
 
 const app: Application = express()
 
 // parser
 app.use(express.json())
+app.use(cookieParser())
 app.use(cors())
+// app.use(cors({origin: ['http://localhost:3000']}))
 
 // application route
 app.use('/api/v1', router)

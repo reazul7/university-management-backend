@@ -1,10 +1,12 @@
+import { StatusCodes } from 'http-status-codes'
+import AppError from '../../errors/AppError'
 import { AcademicSemesterNameCodeMapper } from './academicSemester.constant'
 import { TAcademicSemester } from './academicSemester.interface'
 import { AcademicSemester } from './academicSemester.model'
 
 const createAcademicSemesterIntoDB = async (payload: TAcademicSemester) => {
     if (AcademicSemesterNameCodeMapper[payload.name] !== payload.code) {
-        throw new Error('Invalid semester name and code combination.')
+        throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid semester name and code combination.')
     }
     const result = await AcademicSemester.create(payload)
     return result
@@ -22,7 +24,7 @@ const getSingleAcademicSemesterFromDB = async (id: string) => {
 
 const updateAcademicSemesterIntoDB = async (id: string, payload: Partial<TAcademicSemester>) => {
     if (payload.name && payload.code && AcademicSemesterNameCodeMapper[payload.name] !== payload.code) {
-        throw new Error('Invalid semester name and code combination.')
+        throw new AppError(StatusCodes.CONFLICT, 'Invalid semester name and code combination.')
     }
 
     // Check for duplicate combination of name, code, and year
@@ -36,7 +38,10 @@ const updateAcademicSemesterIntoDB = async (id: string, payload: Partial<TAcadem
         })
 
         if (existingSemester) {
-            throw new Error('An academic semester with the same name, code, and year already exists.')
+            throw new AppError(
+                StatusCodes.CONFLICT,
+                'An academic semester with the same name, code, and year already exists.',
+            )
         }
     }
 

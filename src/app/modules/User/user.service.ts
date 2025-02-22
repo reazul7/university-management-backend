@@ -128,7 +128,7 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
         const newAdmin = await Admin.create([payload], { session })
 
         if (!newAdmin.length) {
-            throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create faculty')
+            throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create admin')
         }
         await session.commitTransaction()
         await session.endSession()
