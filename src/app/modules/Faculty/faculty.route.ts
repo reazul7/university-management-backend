@@ -11,7 +11,7 @@ router.get('/', auth(USER_ROLE.admin, USER_ROLE.faculty), FacultyControllers.get
 router.get('/:id', FacultyControllers.getSingleFaculty)
 router.delete('/:id', FacultyControllers.deleteFaculty)
 router.patch(
-    '/:id',
+    '/:id', 
     validateRequest(facultyValidations.updateFacultyValidationSchema),
     FacultyControllers.updateFaculty,
 )
