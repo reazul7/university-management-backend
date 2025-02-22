@@ -1,10 +1,11 @@
-import { StatusCodes } from 'http-status-codes'
+import bcrypt from 'bcrypt'
+import config from '../../config'
 import AppError from '../../errors/AppError'
-import jwt, { JwtPayload } from 'jsonwebtoken'
+import { JwtPayload } from 'jsonwebtoken'
 import { User } from '../User/user.model'
 import { TLoginUser } from './auth.interface'
-import config from '../../config'
-import bcrypt from 'bcrypt'
+import { StatusCodes } from 'http-status-codes'
+import { createToken } from './auth.utils'
 
 const loginUser = async (payload: TLoginUser) => {
     // check if user is exist
@@ -35,8 +36,18 @@ const loginUser = async (payload: TLoginUser) => {
         userId: user.id,
         role: user.role,
     }
-    const accessToken = jwt.sign(jwtPayload, config.jwt_access_secret as string, { expiresIn: '10d' })
-    return { accessToken, needsPasswordChange: user?.needsPasswordChange }
+    // const accessToken = jwt.sign(jwtPayload, config.jwt_access_secret as string, { expiresIn: '10d' })
+    const accessToken = createToken(
+        jwtPayload,
+        config.jwt_access_secret as string,
+        config.jwt_access_expires_in as string,
+    )
+    const refreshToken = createToken(
+        jwtPayload,
+        config.jwt_refresh_secret as string,
+        config.jwt_refresh_expires_in as string,
+    )
+    return { accessToken, refreshToken, needsPasswordChange: user?.needsPasswordChange }
 }
 
 const changePassword = async (userData: JwtPayload, payload: { oldPassword: string; newPassword: string }) => {
