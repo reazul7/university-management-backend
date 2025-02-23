@@ -7,6 +7,7 @@ import { User } from '../User/user.model'
 import { TLoginUser } from './auth.interface'
 import { StatusCodes } from 'http-status-codes'
 import { createToken } from './auth.utils'
+import { sendEmail } from '../../utils/sendEmail'
 
 const loginUser = async (payload: TLoginUser) => {
     // check if user is exist
@@ -159,6 +160,7 @@ const forgetPassword = async (userId: string) => {
         '10m',
     )
     const resetUILink = `${config?.frontend_url}?id=${user?.id}&token=${resetToken}`
+    sendEmail(user?.email, resetUILink)
     console.log(resetUILink, 'resetUILink')
 }
 
