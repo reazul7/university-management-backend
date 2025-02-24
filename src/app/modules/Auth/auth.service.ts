@@ -70,14 +70,14 @@ const changePassword = async (userData: JwtPayload, payload: { oldPassword: stri
         throw new AppError(StatusCodes.FORBIDDEN, 'This user is already blocked')
     }
 
-    // check if password is Matched
+    // check if password is not Matched
     if (!(await User.isPasswordMatched(payload?.oldPassword, user?.password))) {
         throw new AppError(StatusCodes.UNAUTHORIZED, 'Password do not matched')
     }
 
     // hash new password
     const newHashedPassword = await bcrypt.hash(payload?.newPassword, Number(config.bcrypt_salt_rounds))
-
+    // save new password
     await User.findOneAndUpdate(
         { id: userData.userId, role: userData.role },
         { password: newHashedPassword, needsPasswordChange: false, passwordChangeAt: new Date() },
@@ -87,10 +87,11 @@ const changePassword = async (userData: JwtPayload, payload: { oldPassword: stri
 
 const refreshToken = async (token: string) => {
     // if the token is sent from the client
-    if (!token) {
-        throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized')
-    }
-    // check the token is valid
+    // if (!token) {
+    //     throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized')
+    // }
+
+    // checking if the given token is valid
     const decoded = jwt.verify(token, config.jwt_refresh_secret as string) as JwtPayload
     const { userId, iat } = decoded
 
@@ -161,7 +162,41 @@ const forgetPassword = async (userId: string) => {
     )
     const resetUILink = `${config?.frontend_url}?id=${user?.id}&token=${resetToken}`
     sendEmail(user?.email, resetUILink)
-    console.log(resetUILink, 'resetUILink')
 }
 
-export const AuthServices = { loginUser, changePassword, refreshToken, forgetPassword }
+const resetPassword = async (payload: { id: string; newPassword: string }, token: string) => {
+    // check if user is exist
+    const user = await User.isUserExistByCustomId(payload?.id)
+    if (!user) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'This user is not found')
+    }
+
+    // check if the user is already deleted
+    const isDeleted = user?.isDeleted
+    if (isDeleted) {
+        throw new AppError(StatusCodes.FORBIDDEN, 'This user is already deleted')
+    }
+
+    // check if the user is blocked
+    const userStatus = user?.status
+    if (userStatus === 'blocked') {
+        throw new AppError(StatusCodes.FORBIDDEN, 'This user is already blocked')
+    }
+
+    // checking if the given token is valid
+    const decoded = jwt.verify(token, config.jwt_access_secret as string) as JwtPayload
+    if (payload?.id !== decoded?.userId) {
+        throw new AppError(StatusCodes.FORBIDDEN, 'Unauthorized access! ID mismatch.')
+    }
+
+    // hash new password
+    const newHashedPassword = await bcrypt.hash(payload?.newPassword, Number(config.bcrypt_salt_rounds))
+    // update new password
+    await User.findOneAndUpdate(
+        { id: decoded.userId, role: decoded.role },
+        { password: newHashedPassword, needsPasswordChange: false, passwordChangeAt: new Date() },
+    )
+    return null
+}
+
+export const AuthServices = { loginUser, changePassword, refreshToken, forgetPassword, resetPassword }
