@@ -20,6 +20,7 @@ const getAllAdminsFromDB = async (query: Record<string, unknown>) => {
 
 const getSingleAdminFromDB = async (id: string) => {
     const result = await Admin.findById(id)
+    if (!result) throw new AppError(StatusCodes.NOT_FOUND, 'Admin not found')
     return result
 }
 

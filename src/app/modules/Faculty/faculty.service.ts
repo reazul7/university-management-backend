@@ -20,6 +20,7 @@ const getAllFacultiesFromDB = async (query: Record<string, unknown>) => {
 
 const getSingleFacultyFromDB = async (id: string) => {
     const result = await Faculty.findById(id).populate('academicDepartment')
+    if (!result) throw new AppError(StatusCodes.NOT_FOUND, 'Faculty not found')
     return result
 }
 
