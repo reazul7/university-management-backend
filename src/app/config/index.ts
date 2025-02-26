@@ -16,4 +16,7 @@ export default {
     frontend_url: process.env.FRONTEND_URL,
     mail_username: process.env.MAIL_USERNAME,
     mail_app_password: process.env.MAIL_APP_PASSWORD,
+    cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
+    cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
 }
