@@ -62,7 +62,7 @@ const createStudentIntoDB = async (file: any, password: string, payload: TStuden
     }
 }
 
-const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
+const createFacultyIntoDB = async (file: any, password: string, payload: TFaculty) => {
     // create a user object
     const userData: Partial<TUser> = {}
 
@@ -82,15 +82,22 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
     try {
         session.startTransaction()
         userData.id = await generateFacultyId()
+
+        // send image to cloudinary server
+        const imageName = `${userData?.id}${payload?.name?.firstName}`
+        const path = file?.path
+        const { secure_url } = await sendImageToCloudinary(path, imageName)
+
         // create a user [transaction-1]
         const newUser = await User.create([userData], { session })
         if (!newUser.length) {
             throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create user')
         }
 
-        // create a faculty [transaction-]
+        // create a faculty [transaction-2]
         payload.id = newUser[0].id
         payload.user = newUser[0]._id
+        payload.profileImgUrl = secure_url
 
         const newFaculty = await Faculty.create([payload], { session })
         if (!newFaculty.length) {
@@ -106,7 +113,7 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
     }
 }
 
-const createAdminIntoDB = async (password: string, payload: TAdmin) => {
+const createAdminIntoDB = async (file: any, password: string, payload: TAdmin) => {
     // create a user object
     const userData: Partial<TUser> = {}
 
@@ -119,15 +126,21 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
     try {
         session.startTransaction()
         userData.id = await generateAdminId()
+        // send image to cloudinary server
+        const imageName = `${userData?.id}${payload?.name?.firstName}`
+        const path = file?.path
+        const { secure_url } = await sendImageToCloudinary(path, imageName)
+
         // create a user [transaction-1]
         const newUser = await User.create([userData], { session })
         if (!newUser.length) {
             throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create user')
         }
 
-        // create a faculty [transaction-]
+        // create a admin [transaction-2]
         payload.id = newUser[0].id
         payload.user = newUser[0]._id
+        payload.profileImgUrl = secure_url
 
         const newAdmin = await Admin.create([payload], { session })
         if (!newAdmin.length) {

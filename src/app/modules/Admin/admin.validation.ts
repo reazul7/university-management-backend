@@ -35,7 +35,7 @@ const createAdminValidationSchema = z.object({
             bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
             presentAddress: z.string().max(200).min(1),
             permanentAddress: z.string().max(200).min(1),
-            profileImgUrl: z.string().url().optional(),
+            // profileImgUrl: z.string().url().optional(),
         }),
     }),
 })
@@ -80,7 +80,7 @@ const updateAdminValidationSchema = z.object({
             bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).optional(),
             presentAddress: z.string().max(200).min(1).optional(),
             permanentAddress: z.string().max(200).min(1).optional(),
-            profileImgUrl: z.string().url().optional(),
+            // profileImgUrl: z.string().url().optional(),
         }),
     }),
 })
