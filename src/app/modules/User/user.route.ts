@@ -40,7 +40,7 @@ router.post(
         req.body = JSON.parse(req.body.data)
         next()
     },
-    auth(USER_ROLE.admin),
+    // auth(USER_ROLE.admin),
     validateRequest(adminValidations.createAdminValidationSchema),
     UserControllers.createAdmin,
 )
