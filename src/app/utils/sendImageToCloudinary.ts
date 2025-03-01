@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'fs/promises'
 import multer from 'multer'
 import config from '../config'
 import AppError from '../errors/AppError'
@@ -12,22 +12,17 @@ cloudinary.config({
     api_secret: config.cloudinary_api_secret,
 })
 
-export const sendImageToCloudinary = (path: string, imageName: string) => {
-    return new Promise((resolve, reject) => {
-        cloudinary.uploader.upload(path, { public_id: imageName }, (error, result) => {
-            if (error) {
-                reject(new AppError(StatusCodes.BAD_REQUEST, 'Failed to upload image to Cloudinary'))
-            } else {
-                fs.unlink(path, error => {
-                    if (error) {
-                        reject(new AppError(StatusCodes.BAD_REQUEST, 'Error occurred while deleting temporary file'))
-                    } else {
-                        resolve(result)
-                    }
-                })
-            }
-        })
-    })
+export const sendImageToCloudinary = async (path: string, imageName: string) => {
+    try {
+        const result = await cloudinary.uploader.upload(path, { public_id: imageName })
+        // Delete local file after successful upload
+        await fs.unlink(path)
+        return result
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+        throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to upload image to Cloudinary')
+    }
 }
 
 const storage = multer.diskStorage({
