@@ -7,6 +7,7 @@ import { Student } from '../Student/student.model'
 import mongoose from 'mongoose'
 import { SemesterRegistration } from '../SemesterRegistration/semesterRegistration.model'
 import { Course } from '../Course/course.model'
+import { Faculty } from '../Faculty/faculty.model'
 
 const createEnrolledCourseIntoDB = async (userId: string, payload: TEnrolledCourse) => {
     /**
@@ -56,6 +57,7 @@ const createEnrolledCourseIntoDB = async (userId: string, payload: TEnrolledCour
         { $group: { _id: null, totalEnrolledCredit: { $sum: '$enrolledCourseData.credits' } } },
         { $project: { _id: 0, totalEnrolledCredit: 1 } },
     ])
+
     // total enrolled credits + new enrolled credits > maxCredit
     const totalEnrolledCredit = enrolledCourses?.length > 0 ? enrolledCourses[0].totalEnrolledCredit : 0
     if (totalEnrolledCredit && maxCredit && totalEnrolledCredit + currentCredit > maxCredit) {
@@ -98,4 +100,47 @@ const createEnrolledCourseIntoDB = async (userId: string, payload: TEnrolledCour
     }
 }
 
-export const EnrolledCourseServices = { createEnrolledCourseIntoDB }
+const updateEnrolledCourseMarksIntoDB = async (facultyId: string, payload: Partial<TEnrolledCourse>) => {
+    const { semesterRegistration, offeredCourse, student, courseMarks } = payload
+    const isSemesterRegistrationExists = await SemesterRegistration.findById(semesterRegistration)
+    if (!isSemesterRegistrationExists) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'Semester Registration not found')
+    }
+
+    const isOfferedCourseExists = await OfferedCourse.findById(offeredCourse)
+    if (!isOfferedCourseExists) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'Offered Course not found')
+    }
+
+    const isStudentExists = await Student.findById(student)
+    if (!isStudentExists) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'Student not found')
+    }
+
+    const faculty = await Faculty.findOne({ id: facultyId }, { _id: 1 })
+    if (!faculty) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'Faculty not found')
+    }
+
+    const isCourseBelongToFaculty = await EnrolledCourse.findOne({
+        semesterRegistration,
+        offeredCourse,
+        student,
+        faculty: faculty?._id,
+    })
+    if (!isCourseBelongToFaculty) {
+        throw new AppError(StatusCodes.FORBIDDEN, 'Faculty is not authorized to update this course')
+    }
+
+    const modifiedData: Record<string, unknown> = { ...courseMarks }
+    if (courseMarks && Object.keys(courseMarks).length > 0) {
+        for (const [key, value] of Object.entries(courseMarks)) {
+            modifiedData[`courseMarks.${key}`] = value
+        }
+    }
+
+    const result = await EnrolledCourse.findByIdAndUpdate(isCourseBelongToFaculty.id, modifiedData, { new: true })
+    return result
+}
+
+export const EnrolledCourseServices = { createEnrolledCourseIntoDB, updateEnrolledCourseMarksIntoDB }
