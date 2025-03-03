@@ -8,6 +8,7 @@ import mongoose from 'mongoose'
 import { SemesterRegistration } from '../SemesterRegistration/semesterRegistration.model'
 import { Course } from '../Course/course.model'
 import { Faculty } from '../Faculty/faculty.model'
+import { calculateGradeAndPoints } from './enrolledCourse.utils'
 
 const createEnrolledCourseIntoDB = async (userId: string, payload: TEnrolledCourse) => {
     /**
@@ -133,6 +134,20 @@ const updateEnrolledCourseMarksIntoDB = async (facultyId: string, payload: Parti
     }
 
     const modifiedData: Record<string, unknown> = { ...courseMarks }
+    if (courseMarks?.finalTerm) {
+        const { classTest1, classTest2, midTerm, finalTerm } = courseMarks
+        const totalMarks =
+            Math.ceil(classTest1 * 0.1) +
+            Math.ceil(classTest2 * 0.1) +
+            Math.ceil(midTerm * 0.3) +
+            Math.ceil(finalTerm * 0.5)
+        const result = calculateGradeAndPoints(totalMarks)
+
+        modifiedData.grade = result.grade
+        modifiedData.gradePoints = result.gradePoints
+        modifiedData.isCompleted = true
+    }
+
     if (courseMarks && Object.keys(courseMarks).length > 0) {
         for (const [key, value] of Object.entries(courseMarks)) {
             modifiedData[`courseMarks.${key}`] = value
