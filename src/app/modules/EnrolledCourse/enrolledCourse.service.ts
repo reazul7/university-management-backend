@@ -101,6 +101,11 @@ const createEnrolledCourseIntoDB = async (userId: string, payload: TEnrolledCour
     }
 }
 
+const getAllEnrolledCoursesFromDB = async () => {
+    const result = await EnrolledCourse.find()
+    return result
+}
+
 const updateEnrolledCourseMarksIntoDB = async (facultyId: string, payload: Partial<TEnrolledCourse>) => {
     const { semesterRegistration, offeredCourse, student, courseMarks } = payload
     const isSemesterRegistrationExists = await SemesterRegistration.findById(semesterRegistration)
@@ -158,4 +163,8 @@ const updateEnrolledCourseMarksIntoDB = async (facultyId: string, payload: Parti
     return result
 }
 
-export const EnrolledCourseServices = { createEnrolledCourseIntoDB, updateEnrolledCourseMarksIntoDB }
+export const EnrolledCourseServices = {
+    createEnrolledCourseIntoDB,
+    getAllEnrolledCoursesFromDB,
+    updateEnrolledCourseMarksIntoDB,
+}

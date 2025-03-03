@@ -13,6 +13,7 @@ router.post(
     validateRequest(EnrolledCourseValidations.createEnrolledCourseValidationSchema),
     EnrolledCourseControllers.createEnrolledCourse,
 )
+router.get('/', auth(USER_ROLE.admin, USER_ROLE.faculty), EnrolledCourseControllers.getAllEnrolledCourses)
 router.patch(
     '/update-enrolled-course-marks',
     auth(USER_ROLE.faculty),

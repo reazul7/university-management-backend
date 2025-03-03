@@ -15,6 +15,16 @@ const createEnrolledCourse = catchAsync(async (req, res) => {
     })
 })
 
+const getAllEnrolledCourses = catchAsync(async (req, res) => {
+    const result = await EnrolledCourseServices.getAllEnrolledCoursesFromDB()
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: 'Enrolled courses fetched successfully',
+        data: result,
+    })
+})
+
 const updateEnrolledCourseMarks = catchAsync(async (req, res) => {
     const facultyId = req.user.userId
     const result = await EnrolledCourseServices.updateEnrolledCourseMarksIntoDB(facultyId, req.body)
@@ -27,4 +37,4 @@ const updateEnrolledCourseMarks = catchAsync(async (req, res) => {
     })
 })
 
-export const EnrolledCourseControllers = { createEnrolledCourse, updateEnrolledCourseMarks }
+export const EnrolledCourseControllers = { createEnrolledCourse, getAllEnrolledCourses, updateEnrolledCourseMarks }
