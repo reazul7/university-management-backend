@@ -134,11 +134,15 @@ const updateEnrolledCourseMarksIntoDB = async (facultyId: string, payload: Parti
     }
 
     const modifiedData: Record<string, unknown> = { ...courseMarks }
-    if(courseMarks?.finalTerm){
-        const {classTest1, classTest2, midTerm, finalTerm} = courseMarks
-        const totalMarks = Math.ceil(classTest1*0.10)+Math.ceil(classTest2*0.10)+Math.ceil(midTerm*0.30)+Math.ceil(finalTerm*0.50)
+    if (courseMarks?.finalTerm) {
+        const { classTest1, classTest2, midTerm, finalTerm } = courseMarks
+        const totalMarks =
+            Math.ceil(classTest1 * 0.1) +
+            Math.ceil(classTest2 * 0.1) +
+            Math.ceil(midTerm * 0.3) +
+            Math.ceil(finalTerm * 0.5)
         const result = calculateGradeAndPoints(totalMarks)
-        
+
         modifiedData.grade = result.grade
         modifiedData.gradePoints = result.gradePoints
         modifiedData.isCompleted = true
