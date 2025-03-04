@@ -12,7 +12,7 @@ cloudinary.config({
     api_secret: config.cloudinary_api_secret,
 })
 
-export const sendImageToCloudinary = async (path: string, imageName: string) => {
+export const sendImageToCloudinary = async (path: string, imageName: string): Promise<Record<string, unknown>> => {
     try {
         const result = await cloudinary.uploader.upload(path, { public_id: imageName })
         // Delete local file after successful upload
