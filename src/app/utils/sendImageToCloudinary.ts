@@ -16,7 +16,12 @@ export const sendImageToCloudinary = async (path: string, imageName: string): Pr
     try {
         const result = await cloudinary.uploader.upload(path, { public_id: imageName })
         // Delete local file after successful upload
-        await fs.unlink(path)
+        // await fs.unlink(path)
+        try {
+            await fs.unlink(path)
+        } catch (deleteError) {
+            console.error('⚠️ Warning: Failed to delete local file:', deleteError)
+        }
         return result
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -9,7 +9,7 @@ const createCourseValidationSchema = z.object({
     body: z.object({
         title: z.string(),
         prefix: z.string(),
-        code: z.number(),
+        courseCode: z.string(),
         credits: z.number(),
         isDelete: z.boolean().optional(),
         preRequisiteCourses: z.array(preRequisiteCourseValidationSchema).optional(),

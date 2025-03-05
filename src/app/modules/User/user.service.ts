@@ -34,7 +34,7 @@ const createStudentIntoDB = async (file: any, password: string, payload: TStuden
     if (!academicDepartment) {
         throw new AppError(StatusCodes.NOT_FOUND, 'Academic Department not found')
     }
-    payload.academicFaculty = academicDepartment.academicFaculty
+    payload.academicFaculty = academicDepartment?.academicFaculty
 
     const session = await mongoose.startSession()
 
@@ -88,6 +88,7 @@ const createFacultyIntoDB = async (file: any, password: string, payload: TFacult
     if (!academicDepartment) {
         throw new AppError(StatusCodes.NOT_FOUND, 'Academic department not found')
     }
+    payload.academicFaculty = academicDepartment?.academicFaculty
 
     const session = await mongoose.startSession()
 
