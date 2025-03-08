@@ -1,14 +1,14 @@
-import { StatusCodes } from 'http-status-codes'
 import AppError from '../../errors/AppError'
-import { SemesterRegistration } from '../SemesterRegistration/semesterRegistration.model'
-import { TOfferedCourse } from './offeredCourse.interface'
+import { StatusCodes } from 'http-status-codes'
+import { Faculty } from '../Faculty/faculty.model'
 import { OfferedCourse } from './offeredCourse.model'
+import QueryBuilder from '../../builder/QueryBuilder'
+import { hasTimeConflict } from './offeredCourse.utils'
+import { TOfferedCourse } from './offeredCourse.interface'
+import { Course, CourseFaculty } from '../Course/course.model'
 import { AcademicFaculty } from '../AcademicFaculty/academicFaculty.model'
 import { AcademicDepartment } from '../AcademicDepartment/academicDepartment.model'
-import { Course } from '../Course/course.model'
-import { Faculty } from '../Faculty/faculty.model'
-import { hasTimeConflict } from './offeredCourse.utils'
-import QueryBuilder from '../../builder/QueryBuilder'
+import { SemesterRegistration } from '../SemesterRegistration/semesterRegistration.model'
 
 const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     const {
@@ -30,9 +30,10 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
      * Step 5: check if the faculty id is exists!
      * Step 6: check if the department is belong to the  faculty
      * Step 7: check if the same offered course same section in same registered semester exists
-     * Step 8: get the schedules of the faculties
-     * Step 9: check if the faculty is available at that time. If not then throw error
-     * Step 10: create the offered course
+     * Step 8: Check the Faculty is being to the Course
+     * Step 9: get the schedules of the faculties
+     * Step 10: check if the faculty is available at that time. If not then throw error
+     * Step 11: create the offered course
      */
     // check below id's are exists
     const isSemesterRegistrationExists = await SemesterRegistration.findById(semesterRegistration)
@@ -61,7 +62,7 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
         throw new AppError(StatusCodes.NOT_FOUND, 'This Faculty not found')
     }
 
-    // check the department is being to the faculty
+    // 06: check the department is being to the faculty
     const isDepartmentBelongToFaculty = await AcademicDepartment.findOne({ _id: academicDepartment, academicFaculty })
     if (!isDepartmentBelongToFaculty) {
         throw new AppError(
@@ -70,7 +71,7 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
         )
     }
 
-    // check if the same offered course same section in same registered semester exists
+    // 07: check if the same offered course same section in same registered semester exists
     const isSameOfferedCourseExistsWithSameRegisteredSemesterWithSameSection = await OfferedCourse.findOne({
         semesterRegistration,
         course,
@@ -83,10 +84,20 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
         )
     }
 
-    // get the schedule of the faculties
+    // 08: Check the Faculty is being to the Course
+    const isFacultyBeingToCourse = await CourseFaculty.findOne({
+        course: isCourseExists?._id,
+        faculties: { $in: [isFacultyExists?._id] },
+    })
+    if (!isFacultyBeingToCourse) {
+        throw new AppError(StatusCodes.BAD_REQUEST, 'This Faculty is not being to this course')
+    }
+
+    // 09: get the schedule of the faculties
     const assignedSchedules = await OfferedCourse.find({ semesterRegistration, faculty, days: { $in: days } }).select(
         'days startTime endTime',
     )
+    // 10: check if the faculty is available at that time. If not then throw error
     const newSchedule = { days, startTime, endTime }
     if (hasTimeConflict(assignedSchedules, newSchedule)) {
         throw new AppError(StatusCodes.CONFLICT, 'This faculty is not available at that time! Choose other time or day')
