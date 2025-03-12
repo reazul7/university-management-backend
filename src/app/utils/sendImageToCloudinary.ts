@@ -12,16 +12,11 @@ cloudinary.config({
     api_secret: config.cloudinary_api_secret,
 })
 
-export const sendImageToCloudinary = async (path: string, imageName: string): Promise<Record<string, unknown>> => {
+export const sendImageToCloudinary = async (path: string, imageName: string) => {
     try {
         const result = await cloudinary.uploader.upload(path, { public_id: imageName })
         // Delete local file after successful upload
-        // await fs.unlink(path)
-        try {
-            await fs.unlink(path)
-        } catch (deleteError) {
-            console.error('⚠️ Warning: Failed to delete local file:', deleteError)
-        }
+        await fs.unlink(path)
         return result
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

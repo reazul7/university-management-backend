@@ -8,7 +8,7 @@ export type TPreRequisiteCourses = {
 export type TCourse = {
     title: string
     prefix: string
-    courseCode: string
+    code: number
     credits: number
     isDelete: boolean
     preRequisiteCourses: [TPreRequisiteCourses]
