@@ -1,7 +1,7 @@
-import { StatusCodes } from 'http-status-codes'
-import { OfferedCourseServices } from './offeredCourse.service'
 import catchAsync from '../../utils/catchAsync'
+import { StatusCodes } from 'http-status-codes'
 import sendResponse from '../../utils/sendResponse'
+import { OfferedCourseServices } from './offeredCourse.service'
 
 const createOfferedCourse = catchAsync(async (req, res) => {
     const result = await OfferedCourseServices.createOfferedCourseIntoDB(req.body)
@@ -14,15 +14,14 @@ const createOfferedCourse = catchAsync(async (req, res) => {
     })
 })
 
-const updateOfferedCourse = catchAsync(async (req, res) => {
-    const { offeredCourseId } = req.params
-    const offeredCourse = req.body
-    const result = await OfferedCourseServices.updateOfferedCourseIntoDB(offeredCourseId, offeredCourse)
+const getMyOfferedCourses = catchAsync(async (req, res) => {
+    const userId = req.user?.userId // Ensure userId is properly extracted
+    const result = await OfferedCourseServices.getMyOfferedCoursesFromDB(userId)
 
     sendResponse(res, {
         statusCode: StatusCodes.OK,
         success: true,
-        message: 'Offered Course updated successfully',
+        message: 'Student Offered Courses fetched successfully',
         data: result,
     })
 })
@@ -50,6 +49,19 @@ const getSingleOfferedCourse = catchAsync(async (req, res) => {
     })
 })
 
+const updateOfferedCourse = catchAsync(async (req, res) => {
+    const { offeredCourseId } = req.params
+    const offeredCourse = req.body
+    const result = await OfferedCourseServices.updateOfferedCourseIntoDB(offeredCourseId, offeredCourse)
+
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: 'Offered Course updated successfully',
+        data: result,
+    })
+})
+
 const deleteOfferedCourse = catchAsync(async (req, res) => {
     const { offeredCourseId } = req.params
     const result = await OfferedCourseServices.deleteOfferedCourseFromDB(offeredCourseId)
@@ -64,6 +76,7 @@ const deleteOfferedCourse = catchAsync(async (req, res) => {
 
 export const OfferedCourseControllers = {
     createOfferedCourse,
+    getMyOfferedCourses,
     getAllOfferedCourses,
     getSingleOfferedCourse,
     updateOfferedCourse,
