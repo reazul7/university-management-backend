@@ -1,6 +1,7 @@
 import AppError from '../../errors/AppError'
 import { StatusCodes } from 'http-status-codes'
 import { Faculty } from '../Faculty/faculty.model'
+import { Student } from '../Student/student.model'
 import { OfferedCourse } from './offeredCourse.model'
 import QueryBuilder from '../../builder/QueryBuilder'
 import { hasTimeConflict } from './offeredCourse.utils'
@@ -107,6 +108,94 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     return result
 }
 
+const getMyOfferedCoursesFromDB = async (userId: string) => {
+    const student = await Student.findOne({ id: userId })
+    if (!student) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'Student not found')
+    }
+
+    // find ongoing semester
+    const currentOngoingRegistrationSemester = await SemesterRegistration.findOne({ status: 'ONGOING' })
+    if (!currentOngoingRegistrationSemester) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'There is no Ongoing Semester Registration')
+    }
+    const result = await OfferedCourse.aggregate([
+        {
+            $match: {
+                semesterRegistration: currentOngoingRegistrationSemester?._id,
+                academicFaculty: student?.academicFaculty,
+                academicDepartment: student?.academicDepartment,
+            },
+        },
+        {
+            $lookup: {
+                from: 'courses',
+                localField: 'course',
+                foreignField: '_id',
+                as: 'course',
+            },
+        },
+        {
+            $unwind: '$course',
+        },
+        {
+            $lookup: {
+                from: 'enrolledcourses',
+                let: {
+                    currentOngoingRegistrationSemester: currentOngoingRegistrationSemester._id,
+                    currentStudent: student._id,
+                },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ['$semesterRegistration', '$$currentOngoingRegistrationSemester'] },
+                                    { $eq: ['$student', '$$currentStudent'] },
+                                    { $eq: ['$isEnrolled', true] },
+                                ],
+                            },
+                        },
+                    },
+                ],
+                as: 'enrolledCourses',
+            },
+        },
+        {
+            $addFields: {
+                isAlreadyEnrolled: {
+                    $in: [
+                        '$course._id',
+                        {
+                            $map: { input: '$enrolledCourses', as: 'enroll', in: '$$enroll.course' },
+                        },
+                    ],
+                },
+            },
+        },
+        {
+            $match: {
+                isAlreadyEnrolled: false,
+            },
+        },
+    ])
+    return result
+}
+
+const getAllOfferedCoursesFromDB = async (query: Record<string, unknown>) => {
+    const offeredCourseQuery = new QueryBuilder(OfferedCourse.find(), query).filter().sort().paginate().fields()
+    const result = await offeredCourseQuery.modelQuery
+    return result
+}
+
+const getSingleOfferedCourseFromDB = async (id: string) => {
+    const result = await OfferedCourse.findById(id)
+    if (!result) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'Offered Course not found')
+    }
+    return result
+}
+
 const updateOfferedCourseIntoDB = async (
     id: string,
     payload: Pick<TOfferedCourse, 'faculty' | 'days' | 'startTime' | 'endTime'>,
@@ -154,20 +243,6 @@ const updateOfferedCourseIntoDB = async (
     return result
 }
 
-const getAllOfferedCoursesFromDB = async (query: Record<string, unknown>) => {
-    const offeredCourseQuery = new QueryBuilder(OfferedCourse.find(), query).filter().sort().paginate().fields()
-    const result = await offeredCourseQuery.modelQuery
-    return result
-}
-
-const getSingleOfferedCourseFromDB = async (id: string) => {
-    const result = await OfferedCourse.findById(id)
-    if (!result) {
-        throw new AppError(StatusCodes.NOT_FOUND, 'Offered Course not found')
-    }
-    return result
-}
-
 const deleteOfferedCourseFromDB = async (id: string) => {
     /**
      * Step 1: check if the offered course exists
@@ -195,6 +270,7 @@ export const OfferedCourseServices = {
     createOfferedCourseIntoDB,
     getAllOfferedCoursesFromDB,
     getSingleOfferedCourseFromDB,
+    getMyOfferedCoursesFromDB,
     updateOfferedCourseIntoDB,
     deleteOfferedCourseFromDB,
 }

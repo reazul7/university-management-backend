@@ -1,9 +1,9 @@
 import express from 'express'
-import validateRequest from '../../middleware/validateRequest'
-import { OfferedCourseValidations } from './offeredCourse.validation'
-import { OfferedCourseControllers } from './offeredCourse.controller'
 import auth from '../../middleware/auth'
 import { USER_ROLE } from '../User/user.constant'
+import validateRequest from '../../middleware/validateRequest'
+import { OfferedCourseControllers } from './offeredCourse.controller'
+import { OfferedCourseValidations } from './offeredCourse.validation'
 
 const router = express.Router()
 
@@ -13,12 +13,7 @@ router.post(
     validateRequest(OfferedCourseValidations.createOfferedCourseValidationSchema),
     OfferedCourseControllers.createOfferedCourse,
 )
-router.patch(
-    '/:offeredCourseId',
-    auth(USER_ROLE.superAdmin, USER_ROLE.admin),
-    validateRequest(OfferedCourseValidations.updateOfferedCourseValidationSchema),
-    OfferedCourseControllers.updateOfferedCourse,
-)
+router.get('/my-offered-courses', auth(USER_ROLE.student), OfferedCourseControllers.getMyOfferedCourses)
 router.get(
     '/',
     auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.faculty),
@@ -28,6 +23,12 @@ router.get(
     '/:offeredCourseId',
     auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.faculty, USER_ROLE.student),
     OfferedCourseControllers.getSingleOfferedCourse,
+)
+router.patch(
+    '/:offeredCourseId',
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+    validateRequest(OfferedCourseValidations.updateOfferedCourseValidationSchema),
+    OfferedCourseControllers.updateOfferedCourse,
 )
 router.delete(
     '/:offeredCourseId',
