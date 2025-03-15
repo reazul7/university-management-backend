@@ -4,8 +4,8 @@ import { TEnrolledCourse, TEnrolledCourseMarks } from './enrolledCourse.interfac
 
 const courseMarksSchema = new Schema<TEnrolledCourseMarks>({
     classTest1: { type: Number, default: 0, min: 0, max: 10 },
-    midTerm: { type: Number, default: 0, min: 0, max: 30 },
     classTest2: { type: Number, default: 0, min: 0, max: 10 },
+    midTerm: { type: Number, default: 0, min: 0, max: 30 },
     finalTerm: { type: Number, default: 0, min: 0, max: 50 },
 })
 
@@ -20,7 +20,7 @@ const enrolledCourseSchema = new Schema<TEnrolledCourse>({
     student: { type: Schema.Types.ObjectId, ref: 'Student', required: true },
     isEnrolled: { type: Boolean, default: false },
     courseMarks: { type: courseMarksSchema, default: {} },
-    grade: { type: String, enum: Grade, default: 'NA' },
+    grade: { type: String, enum: Grade, default: 'N/A' },
     gradePoints: { type: Number, min: 0, max: 4, default: 0 },
     isCompleted: { type: Boolean, default: false },
 })

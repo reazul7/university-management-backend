@@ -1,6 +1,6 @@
 import catchAsync from '../../utils/catchAsync'
-import sendResponse from '../../utils/sendResponse'
 import { StatusCodes } from 'http-status-codes'
+import sendResponse from '../../utils/sendResponse'
 import { EnrolledCourseServices } from './enrolledCourse.service'
 
 const createEnrolledCourse = catchAsync(async (req, res) => {
