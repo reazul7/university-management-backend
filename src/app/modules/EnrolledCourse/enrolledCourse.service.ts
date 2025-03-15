@@ -151,17 +151,13 @@ const updateEnrolledCourseMarksIntoDB = async (userId: string, role: string, pay
     const modifiedData: Record<string, unknown> = { ...courseMarks }
     if (courseMarks?.finalTerm) {
         const { classTest1, classTest2, midTerm, finalTerm } = courseMarks
-        const totalMarks =
-            Math.ceil(classTest1) +
-            Math.ceil(classTest2) +
-            Math.ceil(midTerm) +
-            Math.ceil(finalTerm)
+        const totalMarks = Math.ceil(classTest1) + Math.ceil(classTest2) + Math.ceil(midTerm) + Math.ceil(finalTerm)
 
-            // if exam marks will be 100 then calculate the marks ratio
-            // Math.ceil(classTest1 * 0.1) +
-            // Math.ceil(classTest2 * 0.1) +
-            // Math.ceil(midTerm * 0.3) +
-            // Math.ceil(finalTerm * 0.5)
+        // if exam marks will be 100 then calculate the marks ratio
+        // Math.ceil(classTest1 * 0.1) +
+        // Math.ceil(classTest2 * 0.1) +
+        // Math.ceil(midTerm * 0.3) +
+        // Math.ceil(finalTerm * 0.5)
         const result = calculateGradeAndPoints(totalMarks)
 
         modifiedData.grade = result.grade
