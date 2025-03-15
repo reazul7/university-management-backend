@@ -1,14 +1,14 @@
-import { StatusCodes } from 'http-status-codes'
-import AppError from '../../errors/AppError'
-import { OfferedCourse } from './../OfferedCourse/offeredCourse.model'
-import { TEnrolledCourse } from './enrolledCourse.interface'
-import { EnrolledCourse } from './enrolledCourse.model'
-import { Student } from '../Student/student.model'
 import mongoose from 'mongoose'
-import { SemesterRegistration } from '../SemesterRegistration/semesterRegistration.model'
+import AppError from '../../errors/AppError'
+import { StatusCodes } from 'http-status-codes'
 import { Course } from '../Course/course.model'
+import { Student } from '../Student/student.model'
 import { Faculty } from '../Faculty/faculty.model'
+import { EnrolledCourse } from './enrolledCourse.model'
+import { TEnrolledCourse } from './enrolledCourse.interface'
 import { calculateGradeAndPoints } from './enrolledCourse.utils'
+import { OfferedCourse } from './../OfferedCourse/offeredCourse.model'
+import { SemesterRegistration } from '../SemesterRegistration/semesterRegistration.model'
 
 const createEnrolledCourseIntoDB = async (userId: string, payload: TEnrolledCourse) => {
     /**
@@ -106,7 +106,7 @@ const getAllEnrolledCoursesFromDB = async () => {
     return result
 }
 
-const updateEnrolledCourseMarksIntoDB = async (facultyId: string, payload: Partial<TEnrolledCourse>) => {
+const updateEnrolledCourseMarksIntoDB = async (userId: string, role: string, payload: Partial<TEnrolledCourse>) => {
     const { semesterRegistration, offeredCourse, student, courseMarks } = payload
     const isSemesterRegistrationExists = await SemesterRegistration.findById(semesterRegistration)
     if (!isSemesterRegistrationExists) {
@@ -123,17 +123,27 @@ const updateEnrolledCourseMarksIntoDB = async (facultyId: string, payload: Parti
         throw new AppError(StatusCodes.NOT_FOUND, 'Student not found')
     }
 
-    const faculty = await Faculty.findOne({ id: facultyId }, { _id: 1 })
-    if (!faculty) {
-        throw new AppError(StatusCodes.NOT_FOUND, 'Faculty not found')
-    }
+    let isCourseBelongToFaculty = null
+    if (role === 'faculty') {
+        const faculty = await Faculty.findOne({ id: userId }, { _id: 1 })
+        if (!faculty) {
+            throw new AppError(StatusCodes.NOT_FOUND, 'Faculty not found')
+        }
 
-    const isCourseBelongToFaculty = await EnrolledCourse.findOne({
-        semesterRegistration,
-        offeredCourse,
-        student,
-        faculty: faculty?._id,
-    })
+        isCourseBelongToFaculty = await EnrolledCourse.findOne({
+            semesterRegistration,
+            offeredCourse,
+            student,
+            faculty: faculty._id,
+        })
+    } else {
+        isCourseBelongToFaculty = await EnrolledCourse.findOne({
+            semesterRegistration,
+            offeredCourse,
+            student,
+            faculty: isOfferedCourseExists?.faculty,
+        })
+    }
     if (!isCourseBelongToFaculty) {
         throw new AppError(StatusCodes.FORBIDDEN, 'Faculty is not authorized to update this course')
     }
@@ -141,11 +151,13 @@ const updateEnrolledCourseMarksIntoDB = async (facultyId: string, payload: Parti
     const modifiedData: Record<string, unknown> = { ...courseMarks }
     if (courseMarks?.finalTerm) {
         const { classTest1, classTest2, midTerm, finalTerm } = courseMarks
-        const totalMarks =
-            Math.ceil(classTest1 * 0.1) +
-            Math.ceil(classTest2 * 0.1) +
-            Math.ceil(midTerm * 0.3) +
-            Math.ceil(finalTerm * 0.5)
+        const totalMarks = Math.ceil(classTest1) + Math.ceil(classTest2) + Math.ceil(midTerm) + Math.ceil(finalTerm)
+
+        // if exam marks will be 100 then calculate the marks ratio
+        // Math.ceil(classTest1 * 0.1) +
+        // Math.ceil(classTest2 * 0.1) +
+        // Math.ceil(midTerm * 0.3) +
+        // Math.ceil(finalTerm * 0.5)
         const result = calculateGradeAndPoints(totalMarks)
 
         modifiedData.grade = result.grade

@@ -9,14 +9,14 @@ const createOfferedCourse = catchAsync(async (req, res) => {
     sendResponse(res, {
         statusCode: StatusCodes.OK,
         success: true,
-        message: 'Course created successfully',
+        message: 'Offered Course is created successfully',
         data: result,
     })
 })
 
 const getMyOfferedCourses = catchAsync(async (req, res) => {
-    const userId = req.user?.userId // Ensure userId is properly extracted
-    const result = await OfferedCourseServices.getMyOfferedCoursesFromDB(userId)
+    const userId = req.user?.userId
+    const result = await OfferedCourseServices.getMyOfferedCoursesFromDB(userId, req.query)
 
     sendResponse(res, {
         statusCode: StatusCodes.OK,

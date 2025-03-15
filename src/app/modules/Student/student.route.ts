@@ -10,15 +10,15 @@ const router = express.Router()
 router.get('/', auth(USER_ROLE.superAdmin, USER_ROLE.admin), StudentControllers.getAllStudents)
 router.get(
     '/:studentId',
-    auth(USER_ROLE.admin, USER_ROLE.faculty, USER_ROLE.faculty),
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.faculty),
     StudentControllers.getSingleStudent,
 )
 router.patch(
     '/:studentId',
-    auth(USER_ROLE.admin, USER_ROLE.faculty),
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin),
     validateRequest(studentValidations.updateStudentValidationSchema),
     StudentControllers.updateStudent,
 )
-router.delete('/:studentId', auth(USER_ROLE.admin, USER_ROLE.faculty), StudentControllers.deleteStudent)
+router.delete('/:studentId', auth(USER_ROLE.superAdmin, USER_ROLE.admin), StudentControllers.deleteStudent)
 
 export const StudentRoutes = router
