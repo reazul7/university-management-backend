@@ -6,7 +6,6 @@ import { EnrolledCourseServices } from './enrolledCourse.service'
 const createEnrolledCourse = catchAsync(async (req, res) => {
     const userId = req.user.userId
     const result = await EnrolledCourseServices.createEnrolledCourseIntoDB(userId, req.body)
-
     sendResponse(res, {
         statusCode: StatusCodes.OK,
         success: true,
@@ -25,11 +24,22 @@ const getAllEnrolledCourses = catchAsync(async (req, res) => {
     })
 })
 
+const getMyEnrolledCourses = catchAsync(async (req, res) => {
+    const studentId = req.user?.userId
+    const result = await EnrolledCourseServices.getMyEnrolledCoursesFromDB(studentId, req.query)
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: 'Enrolled courses fetched successfully',
+        meta: result.meta,
+        data: result.result,
+    })
+})
+
 const updateEnrolledCourseMarks = catchAsync(async (req, res) => {
     const userId = req.user?.userId
     const role = req.user?.role
     const result = await EnrolledCourseServices.updateEnrolledCourseMarksIntoDB(userId, role, req.body)
-
     sendResponse(res, {
         statusCode: StatusCodes.OK,
         success: true,
@@ -38,4 +48,9 @@ const updateEnrolledCourseMarks = catchAsync(async (req, res) => {
     })
 })
 
-export const EnrolledCourseControllers = { createEnrolledCourse, getAllEnrolledCourses, updateEnrolledCourseMarks }
+export const EnrolledCourseControllers = {
+    createEnrolledCourse,
+    getAllEnrolledCourses,
+    getMyEnrolledCourses,
+    updateEnrolledCourseMarks,
+}
