@@ -6,7 +6,6 @@ import { EnrolledCourseServices } from './enrolledCourse.service'
 const createEnrolledCourse = catchAsync(async (req, res) => {
     const userId = req.user.userId
     const result = await EnrolledCourseServices.createEnrolledCourseIntoDB(userId, req.body)
-
     sendResponse(res, {
         statusCode: StatusCodes.OK,
         success: true,
@@ -32,7 +31,8 @@ const getMyEnrolledCourses = catchAsync(async (req, res) => {
         statusCode: StatusCodes.OK,
         success: true,
         message: 'Enrolled courses fetched successfully',
-        data: result,
+        meta: result.meta,
+        data: result.result,
     })
 })
 
@@ -40,7 +40,6 @@ const updateEnrolledCourseMarks = catchAsync(async (req, res) => {
     const userId = req.user?.userId
     const role = req.user?.role
     const result = await EnrolledCourseServices.updateEnrolledCourseMarksIntoDB(userId, role, req.body)
-
     sendResponse(res, {
         statusCode: StatusCodes.OK,
         success: true,
