@@ -1,8 +1,8 @@
-import { model, Schema } from 'mongoose'
-import { TUser, UserModel } from './user.interface'
 import bcrypt from 'bcrypt'
 import config from '../../config'
+import { model, Schema } from 'mongoose'
 import { UserStatus } from './user.constant'
+import { TUser, UserModel } from './user.interface'
 
 const userSchema = new Schema<TUser, UserModel>(
     {

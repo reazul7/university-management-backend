@@ -1,11 +1,11 @@
-import { StatusCodes } from 'http-status-codes'
-import AppError from '../../errors/AppError'
-import { Faculty } from './faculty.model'
-import { TFaculty } from './faculty.interface'
-import QueryBuilder from '../../builder/QueryBuilder'
-import { FacultySearchableFields } from './faculty.constant'
 import mongoose from 'mongoose'
 import { User } from '../User/user.model'
+import { Faculty } from './faculty.model'
+import AppError from '../../errors/AppError'
+import { TFaculty } from './faculty.interface'
+import { StatusCodes } from 'http-status-codes'
+import QueryBuilder from '../../builder/QueryBuilder'
+import { FacultySearchableFields } from './faculty.constant'
 
 const getAllFacultiesFromDB = async (query: Record<string, unknown>) => {
     const facultyQuery = new QueryBuilder(Faculty.find().populate('academicDepartment'), query)
@@ -15,7 +15,8 @@ const getAllFacultiesFromDB = async (query: Record<string, unknown>) => {
         .paginate()
         .fields()
     const result = await facultyQuery.modelQuery
-    return result
+    const meta = await facultyQuery.countTotal()
+    return { meta, result }
 }
 
 const getSingleFacultyFromDB = async (id: string) => {

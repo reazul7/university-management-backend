@@ -1,7 +1,7 @@
+import catchAsync from '../../utils/catchAsync'
 import { StatusCodes } from 'http-status-codes'
 import { StudentServices } from './student.service'
 import sendResponse from '../../utils/sendResponse'
-import catchAsync from '../../utils/catchAsync'
 
 const getAllStudents = catchAsync(async (req, res) => {
     const result = await StudentServices.getAllStudentsFromDB(req.query)
@@ -9,7 +9,8 @@ const getAllStudents = catchAsync(async (req, res) => {
         statusCode: StatusCodes.OK,
         success: true,
         message: 'Students fetched successfully',
-        data: result,
+        meta: result.meta,
+        data: result.result,
     })
 })
 

@@ -1,7 +1,7 @@
 import { UserService } from './user.service'
 import { StatusCodes } from 'http-status-codes'
-import sendResponse from '../../utils/sendResponse'
 import catchAsync from '../../utils/catchAsync'
+import sendResponse from '../../utils/sendResponse'
 
 const createStudent = catchAsync(async (req, res) => {
     const { student: studentData } = req.body

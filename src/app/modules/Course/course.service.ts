@@ -1,10 +1,10 @@
+import mongoose from 'mongoose'
+import AppError from '../../errors/AppError'
 import { StatusCodes } from 'http-status-codes'
 import QueryBuilder from '../../builder/QueryBuilder'
-import AppError from '../../errors/AppError'
+import { Course, CourseFaculty } from './course.model'
 import { courseSearchableFields } from './course.constant'
 import { TCourse, TCourseFaculty } from './course.interface'
-import { Course, CourseFaculty } from './course.model'
-import mongoose from 'mongoose'
 
 const createCourseIntoDB = async (payload: TCourse) => {
     const result = await Course.create(payload)

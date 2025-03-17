@@ -15,12 +15,13 @@ const createEnrolledCourse = catchAsync(async (req, res) => {
 })
 
 const getAllEnrolledCourses = catchAsync(async (req, res) => {
-    const result = await EnrolledCourseServices.getAllEnrolledCoursesFromDB()
+    const result = await EnrolledCourseServices.getAllEnrolledCoursesFromDB(req.query)
     sendResponse(res, {
         statusCode: StatusCodes.OK,
         success: true,
         message: 'Enrolled courses fetched successfully',
-        data: result,
+        meta: result.meta,
+        data: result.result,
     })
 })
 

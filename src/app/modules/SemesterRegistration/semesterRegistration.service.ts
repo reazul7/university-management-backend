@@ -1,12 +1,12 @@
-import { SemesterRegistration } from './semesterRegistration.model'
-import { StatusCodes } from 'http-status-codes'
-import { AcademicSemester } from '../AcademicSemester/academicSemester.model'
-import { TSemesterRegistration } from './semesterRegistration.interface'
-import { RegistrationStatus } from './semesterRegistration.constant'
-import QueryBuilder from '../../builder/QueryBuilder'
-import AppError from '../../errors/AppError'
 import mongoose from 'mongoose'
+import AppError from '../../errors/AppError'
+import { StatusCodes } from 'http-status-codes'
+import QueryBuilder from '../../builder/QueryBuilder'
+import { SemesterRegistration } from './semesterRegistration.model'
+import { RegistrationStatus } from './semesterRegistration.constant'
 import { OfferedCourse } from '../OfferedCourse/offeredCourse.model'
+import { TSemesterRegistration } from './semesterRegistration.interface'
+import { AcademicSemester } from '../AcademicSemester/academicSemester.model'
 
 const createSemesterRegistrationIntoDB = async (payload: TSemesterRegistration) => {
     const academicSemester = payload?.academicSemester
@@ -44,7 +44,8 @@ const getAllSemesterRegistrationsFromDB = async (query: Record<string, unknown>)
         .paginate()
         .fields()
     const result = await semesterRegistrationQuery.modelQuery
-    return result
+    const meta = await semesterRegistrationQuery.countTotal()
+    return { meta, result }
 }
 
 const getSingleSemesterRegistrationFromDB = async (id: string) => {

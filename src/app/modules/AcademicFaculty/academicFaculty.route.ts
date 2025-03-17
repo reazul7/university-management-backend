@@ -1,7 +1,7 @@
 import express from 'express'
 import auth from '../../middleware/auth'
-import validateRequest from '../../middleware/validateRequest'
 import { USER_ROLE } from '../User/user.constant'
+import validateRequest from '../../middleware/validateRequest'
 import { AcademicFacultyControllers } from './academicFaculty.controller'
 import { AcademicFacultyValidations } from './academicFaculty.validation'
 

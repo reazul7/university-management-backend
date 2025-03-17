@@ -1,7 +1,7 @@
-import { StatusCodes } from 'http-status-codes'
 import catchAsync from '../../utils/catchAsync'
-import sendResponse from '../../utils/sendResponse'
+import { StatusCodes } from 'http-status-codes'
 import { AdminServices } from './admin.service'
+import sendResponse from '../../utils/sendResponse'
 
 const getAllAdmins = catchAsync(async (req, res) => {
     const result = await AdminServices.getAllAdminsFromDB(req.query)
@@ -10,7 +10,8 @@ const getAllAdmins = catchAsync(async (req, res) => {
         statusCode: StatusCodes.OK,
         success: true,
         message: 'Admins fetched successfully',
-        data: result,
+        meta: result.meta,
+        data: result.result,
     })
 })
 

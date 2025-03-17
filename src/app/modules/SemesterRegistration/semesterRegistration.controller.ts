@@ -1,7 +1,7 @@
-import catchAsync from '../../utils/catchAsync'
-import { SemesterRegistrationServices } from './semesterRegistration.service'
-import sendResponse from '../../utils/sendResponse'
 import { StatusCodes } from 'http-status-codes'
+import catchAsync from '../../utils/catchAsync'
+import sendResponse from '../../utils/sendResponse'
+import { SemesterRegistrationServices } from './semesterRegistration.service'
 
 const createSemesterRegistration = catchAsync(async (req, res) => {
     const result = await SemesterRegistrationServices.createSemesterRegistrationIntoDB(req.body)
@@ -21,7 +21,8 @@ const getAllSemesterRegistrations = catchAsync(async (req, res) => {
         statusCode: StatusCodes.OK,
         success: true,
         message: 'Semester Registrations fetched successfully',
-        data: result,
+        meta: result.meta,
+        data: result.result,
     })
 })
 

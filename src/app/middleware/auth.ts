@@ -1,11 +1,11 @@
-import AppError from '../errors/AppError'
-import catchAsync from '../utils/catchAsync'
 import config from '../config'
 import { JwtPayload } from 'jsonwebtoken'
+import AppError from '../errors/AppError'
+import catchAsync from '../utils/catchAsync'
 import { StatusCodes } from 'http-status-codes'
-import { TUserRole } from '../modules/User/user.interface'
 import { User } from '../modules/User/user.model'
 import { verifyToken } from '../modules/Auth/auth.utils'
+import { TUserRole } from '../modules/User/user.interface'
 
 const auth = (...requiredRoles: TUserRole[]) => {
     return catchAsync(async (req, res, next) => {

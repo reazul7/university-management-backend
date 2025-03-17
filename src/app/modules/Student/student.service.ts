@@ -1,9 +1,9 @@
 import mongoose from 'mongoose'
+import { User } from '../User/user.model'
 import { Student } from './student.model'
 import AppError from '../../errors/AppError'
-import { StatusCodes } from 'http-status-codes'
-import { User } from '../User/user.model'
 import { TStudent } from './student.interface'
+import { StatusCodes } from 'http-status-codes'
 import QueryBuilder from '../../builder/QueryBuilder'
 import { studentSearchableFields } from './student.constant'
 
