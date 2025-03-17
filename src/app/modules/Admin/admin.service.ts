@@ -1,11 +1,11 @@
-import { StatusCodes } from 'http-status-codes'
-import AppError from '../../errors/AppError'
-import QueryBuilder from '../../builder/QueryBuilder'
 import mongoose from 'mongoose'
-import { User } from '../User/user.model'
 import { Admin } from './admin.model'
-import { AdminSearchableFields } from './admin.constant'
+import { User } from '../User/user.model'
 import { TAdmin } from './admin.interface'
+import AppError from '../../errors/AppError'
+import { StatusCodes } from 'http-status-codes'
+import QueryBuilder from '../../builder/QueryBuilder'
+import { AdminSearchableFields } from './admin.constant'
 
 const getAllAdminsFromDB = async (query: Record<string, unknown>) => {
     const adminQuery = new QueryBuilder(Admin.find(), query)
@@ -15,7 +15,8 @@ const getAllAdminsFromDB = async (query: Record<string, unknown>) => {
         .paginate()
         .fields()
     const result = await adminQuery.modelQuery
-    return result
+    const meta = await adminQuery.countTotal()
+    return { meta, result }
 }
 
 const getSingleAdminFromDB = async (id: string) => {

@@ -1,12 +1,12 @@
 import bcrypt from 'bcrypt'
 import config from '../../config'
-import AppError from '../../errors/AppError'
-import { JwtPayload } from 'jsonwebtoken'
 import { User } from '../User/user.model'
+import { JwtPayload } from 'jsonwebtoken'
+import AppError from '../../errors/AppError'
 import { TLoginUser } from './auth.interface'
 import { StatusCodes } from 'http-status-codes'
-import { createToken, verifyToken } from './auth.utils'
 import { sendEmail } from '../../utils/sendEmail'
+import { createToken, verifyToken } from './auth.utils'
 
 const loginUser = async (payload: TLoginUser) => {
     // check if user is exist

@@ -1,17 +1,23 @@
-// import { Types } from 'mongoose'
-import { TAcademicDepartment } from './academicDepartment.interface'
-import { AcademicDepartment } from './academicDepartment.model'
 import AppError from '../../errors/AppError'
 import { StatusCodes } from 'http-status-codes'
+import QueryBuilder from '../../builder/QueryBuilder'
+import { AcademicDepartment } from './academicDepartment.model'
+import { TAcademicDepartment } from './academicDepartment.interface'
 
 const createAcademicDepartmentIntoDB = async (payload: string) => {
     const result = await AcademicDepartment.create(payload)
     return result
 }
 
-const getAllAcademicDepartmentsFromDB = async () => {
-    const result = await AcademicDepartment.find().populate('academicFaculty')
-    return result
+const getAllAcademicDepartmentsFromDB = async (query: Record<string, unknown>) => {
+    const academicDepartmentQuery = new QueryBuilder(AcademicDepartment.find().populate('academicFaculty'), query)
+        .filter()
+        .sort()
+        .paginate()
+        .fields()
+    const result = await academicDepartmentQuery.modelQuery
+    const meta = await academicDepartmentQuery.countTotal()
+    return { meta, result }
 }
 
 const getSingleAcademicDepartmentFromDB = async (id: string) => {

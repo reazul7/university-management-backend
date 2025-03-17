@@ -1,7 +1,7 @@
-import { StatusCodes } from 'http-status-codes'
 import catchAsync from '../../utils/catchAsync'
-import sendResponse from '../../utils/sendResponse'
+import { StatusCodes } from 'http-status-codes'
 import { CourseServices } from './course.service'
+import sendResponse from '../../utils/sendResponse'
 
 const createCourse = catchAsync(async (req, res) => {
     const result = await CourseServices.createCourseIntoDB(req.body)
@@ -21,7 +21,8 @@ const getAllCourses = catchAsync(async (req, res) => {
         statusCode: StatusCodes.OK,
         success: true,
         message: 'Courses fetched successfully',
-        data: result,
+        meta: result.meta,
+        data: result.result,
     })
 })
 

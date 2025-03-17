@@ -1,9 +1,9 @@
 import express from 'express'
+import auth from '../../middleware/auth'
+import { USER_ROLE } from '../User/user.constant'
 import validateRequest from '../../middleware/validateRequest'
 import { SemesterRegistrationValidations } from './semesterRegistration.validation'
 import { SemesterRegistrationControllers } from './semesterRegistration.controller'
-import auth from '../../middleware/auth'
-import { USER_ROLE } from '../User/user.constant'
 
 const router = express.Router()
 

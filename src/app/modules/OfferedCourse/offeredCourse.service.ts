@@ -233,7 +233,8 @@ const getMyOfferedCoursesFromDB = async (userId: string, query: Record<string, u
 const getAllOfferedCoursesFromDB = async (query: Record<string, unknown>) => {
     const offeredCourseQuery = new QueryBuilder(OfferedCourse.find(), query).filter().sort().paginate().fields()
     const result = await offeredCourseQuery.modelQuery
-    return result
+    const meta = await offeredCourseQuery.countTotal()
+    return { meta, result }
 }
 
 const getSingleOfferedCourseFromDB = async (id: string) => {

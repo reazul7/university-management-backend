@@ -4,12 +4,12 @@ import { StatusCodes } from 'http-status-codes'
 import { Course } from '../Course/course.model'
 import { Student } from '../Student/student.model'
 import { Faculty } from '../Faculty/faculty.model'
+import QueryBuilder from '../../builder/QueryBuilder'
 import { EnrolledCourse } from './enrolledCourse.model'
 import { TEnrolledCourse } from './enrolledCourse.interface'
 import { calculateGradeAndPoints } from './enrolledCourse.utils'
 import { OfferedCourse } from './../OfferedCourse/offeredCourse.model'
 import { SemesterRegistration } from '../SemesterRegistration/semesterRegistration.model'
-import QueryBuilder from '../../builder/QueryBuilder'
 
 const createEnrolledCourseIntoDB = async (userId: string, payload: TEnrolledCourse) => {
     /**
@@ -102,9 +102,20 @@ const createEnrolledCourseIntoDB = async (userId: string, payload: TEnrolledCour
     }
 }
 
-const getAllEnrolledCoursesFromDB = async () => {
-    const result = await EnrolledCourse.find()
-    return result
+const getAllEnrolledCoursesFromDB = async (query: Record<string, unknown>) => {
+    const enrolledCourseQuery = new QueryBuilder(
+        EnrolledCourse.find().populate(
+            'semesterRegistration academicSemester academicFaculty academicDepartment offeredCourse course student faculty',
+        ),
+        query,
+    )
+        .filter()
+        .sort()
+        .paginate()
+        .fields()
+    const result = await enrolledCourseQuery.modelQuery
+    const meta = await enrolledCourseQuery.countTotal()
+    return { meta, result }
 }
 
 const getMyEnrolledCoursesFromDB = async (studentId: string, query: Record<string, unknown>) => {

@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Request, Response, NextFunction } from 'express'
-import { ZodError } from 'zod'
-import { TErrorSource } from '../interface/error'
 import config from '../config'
-import handleZodError from '../errors/handleZodError'
-import handleValidationError from '../errors/handleValidationError'
-import handleCastError from '../errors/handleCastError'
-import handleDuplicateError from '../errors/handleDuplicateError'
+import { ZodError } from 'zod'
 import AppError from '../errors/AppError'
+import { TErrorSource } from '../interface/error'
+import handleZodError from '../errors/handleZodError'
+import handleCastError from '../errors/handleCastError'
+import { Request, Response, NextFunction } from 'express'
+import handleDuplicateError from '../errors/handleDuplicateError'
+import handleValidationError from '../errors/handleValidationError'
 const globalErrorHandler = (error: any, req: Request, res: Response, next: NextFunction) => {
     let statusCode = 500
     let message = 'Something went wrong!'
