@@ -1,5 +1,5 @@
 {
-    "name": "university-management-server",
+    "name": "university-management-backend",
     "version": "1.0.0",
     "main": "index.js",
     "license": "MIT",
