@@ -1,12 +1,16 @@
 import app from './app'
-import config from './app/config'
+import { Server } from 'http'
 import mongoose from 'mongoose'
+import config from './app/config'
+import seedSuperAdmin from './app/DB'
+
+let server: Server
 
 async function main() {
     try {
-        await mongoose.connect(config.databaseURL as string)
-        
-        app.listen(config.port, () => {
+        await mongoose.connect(config.database_url as string)
+        seedSuperAdmin()
+        server = app.listen(config.port, () => {
             console.log(`Example app listening on port ${config.port}`)
         })
     } catch (error) {
@@ -15,3 +19,17 @@ async function main() {
 }
 
 main()
+process.on('unhandledRejection', () => {
+    console.log('😈 unhandledRejection is detected. Server is shutting down....')
+    if (server) {
+        server.close(() => {
+            process.exit(1)
+        })
+    }
+    process.exit(1)
+})
+
+process.on('uncaughtException', () => {
+    console.log('�� UncaughtException is detected. Server is shutting down....')
+    process.exit(1)
+})
