@@ -14,19 +14,19 @@ The University Management Backend is a scalable and secure API built using TypeS
 
 
 ## 🛠️ Tech Stack
-**Backend:** TypeScript, Node.js, Express.js
-**Database:** MongoDB (Mongoose ODM)
-**Authentication:** JWT, bcrypt, cookie-parser
-**Validation:** Zod
-**Utilities & Middleware:** CORS, ESLint, Prettier, HTTP Status Codes
-**Environment Configuration:** dotenv
+- **Backend:** TypeScript, Node.js, Express.js
+- **Database:** MongoDB (Mongoose ODM)
+- **Authentication:** JWT, bcrypt, cookie-parser
+- **Validation:** Zod
+- **Utilities & Middleware:** CORS, ESLint, Prettier, HTTP Status Codes
+- **Environment Configuration:** dotenv
 
 
 
 ## 🛡️ Security & Middleware
-**CORS Configuration:** Only allows requests from FRONTEND_URL
-**JWT Authentication:** Protects sensitive routes
-**Data Validation:** Ensured via Zod schema
+- **CORS Configuration:** Only allows requests from FRONTEND_URL
+- **JWT Authentication:** Protects sensitive routes
+- **Data Validation:** Ensured via Zod schema
 
 
 
@@ -98,8 +98,8 @@ The University Management Backend is a scalable and secure API built using TypeS
 
 
 
-<!-- ## 📜 License
-- This project is licensed under the MIT License. -->
+## 📜 License
+- This project is licensed under the MIT License.
 
 
 
