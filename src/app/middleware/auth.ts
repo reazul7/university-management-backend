@@ -15,7 +15,13 @@ const auth = (...requiredRoles: TUserRole[]) => {
             throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized')
         }
         // check the token is valid
-        const decoded = verifyToken(token, config.jwt_access_secret as string)
+        let decoded
+        try {
+            decoded = verifyToken(token, config.jwt_access_secret as string)
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+            throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized')
+        }
         const { userId, role, iat } = decoded
 
         // check if user is exist
