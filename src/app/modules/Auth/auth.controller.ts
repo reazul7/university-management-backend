@@ -8,9 +8,9 @@ const loginUser = catchAsync(async (req, res) => {
     const result = await AuthServices.loginUser(req.body)
     const { accessToken, refreshToken, needsPasswordChange } = result
     res.cookie('refreshToken', refreshToken, {
-        secure: config.node_env === 'production',
+        secure: config.node_env === 'production' ? true : false,
         httpOnly: true,
-        sameSite: 'none',
+        sameSite: config.node_env === 'production' ? 'none' : 'lax',
         maxAge: 1000 * 60 * 60 * 24 * 365,
     })
 
