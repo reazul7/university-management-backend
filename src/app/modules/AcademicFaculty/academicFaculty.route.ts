@@ -19,6 +19,11 @@ router.get(
     AcademicFacultyControllers.getAllAcademicFaculties,
 )
 router.get(
+    '/list',
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.faculty, USER_ROLE.student),
+    AcademicFacultyControllers.getAllAcademicFacultiesList,
+)
+router.get(
     '/:academicFacultyId',
     auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.faculty, USER_ROLE.student),
     AcademicFacultyControllers.getSingleAcademicFaculty,
