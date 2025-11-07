@@ -26,6 +26,17 @@ const getAllAcademicFaculties = catchAsync(async (req, res) => {
     })
 })
 
+const getAllAcademicFacultiesList = catchAsync(async (req, res) => {
+    const result = await AcademicFacultyServices.getAllAcademicFacultiesListFromDB()
+
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: 'Academic Faculties List fetched successfully',
+        data: result.result,
+    })
+})
+
 const getSingleAcademicFaculty = catchAsync(async (req, res) => {
     const { academicFacultyId } = req.params
     const result = await AcademicFacultyServices.getSingleAcademicFacultyFromDB(academicFacultyId)
@@ -53,6 +64,7 @@ const updateAcademicFaculty = catchAsync(async (req, res) => {
 export const AcademicFacultyControllers = {
     createAcademicFaculty,
     getAllAcademicFaculties,
+    getAllAcademicFacultiesList,
     getSingleAcademicFaculty,
     updateAcademicFaculty,
 }
