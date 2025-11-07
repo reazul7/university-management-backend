@@ -16,6 +16,11 @@ const getAllAcademicFacultiesFromDB = async (query: Record<string, unknown>) => 
     return { meta, result }
 }
 
+const getAllAcademicFacultiesListFromDB = async () => {
+    const result = await AcademicFaculty.find({}, { _id: 1, name: 1 }).sort({ name: 1 })
+    return { result }
+}
+
 const getSingleAcademicFacultyFromDB = async (id: string) => {
     const result = await AcademicFaculty.findById(id)
     if (!result) throw new AppError(StatusCodes.NOT_FOUND, 'Academic Faculty not found')
@@ -34,6 +39,7 @@ const updateAcademicFacultyIntoDB = async (id: string, payload: Partial<TAcademi
 export const AcademicFacultyServices = {
     createAcademicFacultyIntoDB,
     getAllAcademicFacultiesFromDB,
+    getAllAcademicFacultiesListFromDB,
     getSingleAcademicFacultyFromDB,
     updateAcademicFacultyIntoDB,
 }
