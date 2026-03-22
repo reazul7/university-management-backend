@@ -20,6 +20,11 @@ const getAllAcademicDepartmentsFromDB = async (query: Record<string, unknown>) =
     return { meta, result }
 }
 
+const getAllAcademicDepartmentsListFromDB = async () => {
+    const result = await AcademicDepartment.find({}, { _id: 1, name: 1 }).sort({ name: 1 })
+    return { result }
+}
+
 const getSingleAcademicDepartmentFromDB = async (id: string) => {
     const result = await AcademicDepartment.findById(id).populate('academicFaculty')
     if (!result) throw new AppError(StatusCodes.NOT_FOUND, 'Academic Department not found')
@@ -32,9 +37,19 @@ const updateAcademicDepartmentIntoDB = async (id: string, payload: Partial<TAcad
     return result
 }
 
+const deleteAcademicDepartmentFromDB = async (id: string) => {
+    const result = await AcademicDepartment.findByIdAndDelete(id)
+    if (!result) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'Academic Department not found')
+    }
+    return result
+}
+
 export const AcademicDepartmentServices = {
     createAcademicDepartmentIntoDB,
     getAllAcademicDepartmentsFromDB,
+    getAllAcademicDepartmentsListFromDB,
     getSingleAcademicDepartmentFromDB,
     updateAcademicDepartmentIntoDB,
+    deleteAcademicDepartmentFromDB,
 }

@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import QueryBuilder from '../../builder/QueryBuilder'
 import { AcademicFaculty } from './academicFaculty.model'
 import { TAcademicFaculty } from './academicFaculty.interface'
+import { AcademicDepartment } from '../AcademicDepartment/academicDepartment.model'
 
 const createAcademicFacultyIntoDB = async (payload: string) => {
     const result = await AcademicFaculty.create(payload)
@@ -36,10 +37,25 @@ const updateAcademicFacultyIntoDB = async (id: string, payload: Partial<TAcademi
     return result
 }
 
+const deleteAcademicFacultyFromDB = async (id: string) => {
+    const isDepartmentExist = await AcademicDepartment.findOne({
+        academicFaculty: id,
+    })
+    if (isDepartmentExist) {
+        throw new AppError(StatusCodes.BAD_REQUEST, 'Cannot delete Faculty. Departments exist under this faculty.')
+    }
+    const result = await AcademicFaculty.findByIdAndDelete(id)
+    if (!result) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'Academic Faculty not found')
+    }
+    return result
+}
+
 export const AcademicFacultyServices = {
     createAcademicFacultyIntoDB,
     getAllAcademicFacultiesFromDB,
     getAllAcademicFacultiesListFromDB,
     getSingleAcademicFacultyFromDB,
     updateAcademicFacultyIntoDB,
+    deleteAcademicFacultyFromDB,
 }
