@@ -44,10 +44,22 @@ const updateAcademicSemester = catchAsync(async (req, res) => {
         data: result,
     })
 })
+const deleteAcademicSemester = catchAsync(async (req, res) => {
+    const { academicSemesterId } = req.params
+    const result = await AcademicSemesterServices.deleteAcademicSemesterIntoDB(academicSemesterId)
+
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: 'Academic Semester deleted successfully',
+        data: result,
+    })
+})
 
 export const AcademicSemesterControllers = {
     createAcademicSemester,
     getAllAcademicSemesters,
     getSingleAcademicSemester,
     updateAcademicSemester,
+    deleteAcademicSemester,
 }

@@ -4,6 +4,11 @@ import QueryBuilder from '../../builder/QueryBuilder'
 import { AcademicSemester } from './academicSemester.model'
 import { TAcademicSemester } from './academicSemester.interface'
 import { AcademicSemesterNameCodeMapper } from './academicSemester.constant'
+import { SemesterRegistration } from '../SemesterRegistration/semesterRegistration.model'
+import { OfferedCourse } from '../OfferedCourse/offeredCourse.model'
+import { EnrolledCourse } from '../EnrolledCourse/enrolledCourse.model'
+import { Student } from '../Student/student.model'
+import { User } from '../User/user.model'
 
 const createAcademicSemesterIntoDB = async (payload: TAcademicSemester) => {
     if (AcademicSemesterNameCodeMapper[payload.name] !== payload.code) {
@@ -14,7 +19,12 @@ const createAcademicSemesterIntoDB = async (payload: TAcademicSemester) => {
 }
 
 const getAllAcademicSemestersFromDB = async (query: Record<string, unknown>) => {
-    const academicSemesterQuery = new QueryBuilder(AcademicSemester.find(), query).filter().sort().paginate().fields()
+    const academicSemesterQuery = new QueryBuilder(AcademicSemester.find(), query)
+        .search(['name'])
+        .filter()
+        .sort()
+        .paginate()
+        .fields()
     const result = await academicSemesterQuery.modelQuery
     const meta = await academicSemesterQuery.countTotal()
     return { meta, result }
@@ -56,9 +66,49 @@ const updateAcademicSemesterIntoDB = async (id: string, payload: Partial<TAcadem
     return result
 }
 
+const deleteAcademicSemesterIntoDB = async (id: string) => {
+    const isAcademicSemesterExists = await AcademicSemester.findById(id)
+    if (!isAcademicSemesterExists) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'Academic Semester not found')
+    }
+
+    const semesterBasedStudentUserIdPattern = `^${isAcademicSemesterExists.year}${isAcademicSemesterExists.code}`
+
+    const [semesterRegistrationCount, offeredCourseCount, enrolledCourseCount, studentCount, studentUserCount] =
+        await Promise.all([
+            SemesterRegistration.countDocuments({ academicSemester: id }),
+            OfferedCourse.countDocuments({ academicSemester: id }),
+            EnrolledCourse.countDocuments({ academicSemester: id }),
+            Student.countDocuments({ admissionSemester: id }),
+            User.countDocuments({
+                role: 'student',
+                id: { $regex: semesterBasedStudentUserIdPattern },
+            }),
+        ])
+
+    if (semesterRegistrationCount || offeredCourseCount || enrolledCourseCount || studentCount || studentUserCount) {
+        const dependencies: string[] = []
+
+        if (semesterRegistrationCount) dependencies.push(`semesterRegistration: ${semesterRegistrationCount}`)
+        if (offeredCourseCount) dependencies.push(`offeredCourse: ${offeredCourseCount}`)
+        if (enrolledCourseCount) dependencies.push(`enrolledCourse: ${enrolledCourseCount}`)
+        if (studentCount) dependencies.push(`student: ${studentCount}`)
+        if (studentUserCount) dependencies.push(`studentUserBySemesterId: ${studentUserCount}`)
+
+        throw new AppError(
+            StatusCodes.BAD_REQUEST,
+            `Cannot delete this Academic Semester because dependencies exist (${dependencies.join(', ')}).`,
+        )
+    }
+
+    const result = await AcademicSemester.findByIdAndDelete(id)
+    return result
+}
+
 export const AcademicSemesterServices = {
     createAcademicSemesterIntoDB,
     getAllAcademicSemestersFromDB,
     getSingleAcademicSemesterFromDB,
     updateAcademicSemesterIntoDB,
+    deleteAcademicSemesterIntoDB,
 }
