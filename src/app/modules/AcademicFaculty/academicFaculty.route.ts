@@ -34,5 +34,10 @@ router.patch(
     validateRequest(AcademicFacultyValidations.academicFacultyValidation),
     AcademicFacultyControllers.updateAcademicFaculty,
 )
+router.delete(
+    '/:academicFacultyId',
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+    AcademicFacultyControllers.deleteAcademicFaculty,
+)
 
 export const AcademicFacultyRoutes = router
