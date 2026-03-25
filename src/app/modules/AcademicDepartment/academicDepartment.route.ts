@@ -19,6 +19,11 @@ router.get(
     AcademicDepartmentControllers.getAllAcademicDepartments,
 )
 router.get(
+    '/all-list',
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.faculty, USER_ROLE.student),
+    AcademicDepartmentControllers.getAllAcademicDepartmentsList,
+)
+router.get(
     '/:academicDepartmentId',
     auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.faculty, USER_ROLE.student),
     AcademicDepartmentControllers.getSingleAcademicDepartment,
@@ -28,6 +33,11 @@ router.patch(
     auth(USER_ROLE.superAdmin, USER_ROLE.admin),
     validateRequest(AcademicDepartmentValidations.updateAcademicDepartmentValidationSchema),
     AcademicDepartmentControllers.updateAcademicDepartment,
+)
+router.delete(
+    '/:academicDepartmentId',
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+    AcademicDepartmentControllers.deleteAcademicDepartment,
 )
 
 export const AcademicDepartmentRoutes = router
