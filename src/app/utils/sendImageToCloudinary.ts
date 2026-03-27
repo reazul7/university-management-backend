@@ -30,6 +30,14 @@ export const sendImageToCloudinary = async (path: string, imageName: string): Pr
     }
 }
 
+export const deleteImageFromCloudinary = async (imageName: string): Promise<void> => {
+    try {
+        await cloudinary.uploader.destroy(imageName)
+    } catch (error) {
+        console.error(`⚠️ Warning: Failed to delete image from Cloudinary: ${imageName}`, error)
+    }
+}
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, process.cwd() + '/uploads/')
