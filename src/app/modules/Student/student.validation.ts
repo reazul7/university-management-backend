@@ -15,14 +15,14 @@ const createUserNameValidationSchema = z.object({
 })
 const createGuardianValidationSchema = z.object({
     fatherName: z.string().max(50).min(1),
-    fatherOccupation: z.string().max(50).min(1),
+    fatherOccupation: z.string().max(50).min(1).optional(),
     fatherContactNumber: z
         .string()
         .max(15)
         .min(10)
         .regex(/^[0-9]+$/),
     motherName: z.string().max(50).min(1),
-    motherOccupation: z.string().max(50).min(1),
+    motherOccupation: z.string().max(50).min(1).optional(),
     motherContactNumber: z
         .string()
         .max(15)
@@ -31,7 +31,7 @@ const createGuardianValidationSchema = z.object({
 })
 const createLocalGuardianValidationSchema = z.object({
     name: z.string().max(50).min(1),
-    occupation: z.string().max(50).min(1),
+    occupation: z.string().max(50).min(1).optional(),
     contactNumber: z
         .string()
         .max(15)
