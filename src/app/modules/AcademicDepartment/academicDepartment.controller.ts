@@ -32,7 +32,7 @@ const getAllAcademicDepartmentsList = catchAsync(async (req, res) => {
     sendResponse(res, {
         statusCode: StatusCodes.OK,
         success: true,
-        message: 'All Academic Departments List fetched successfully',
+        message: 'Fetched all Academic Departments List',
         data: result.result,
     })
 })
@@ -63,7 +63,7 @@ const updateAcademicDepartment = catchAsync(async (req, res) => {
 
 const deleteAcademicDepartment = catchAsync(async (req, res) => {
     const { academicDepartmentId } = req.params
-    const result = await AcademicDepartmentServices.deleteAcademicDepartmentFromDB(academicDepartmentId)
+    const result = await AcademicDepartmentServices.deleteAcademicDepartmentIntoDB(academicDepartmentId)
 
     sendResponse(res, {
         statusCode: StatusCodes.OK,

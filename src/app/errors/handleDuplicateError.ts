@@ -15,7 +15,7 @@ const handleDuplicateError = (error: any): TGenericErrorResponse => {
     ]
     return {
         statusCode: 409,
-        message: 'Duplicate error',
+        message: `${extractedMessage} is already exists`,
         errorSources,
     }
 }

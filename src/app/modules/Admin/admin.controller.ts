@@ -15,6 +15,17 @@ const getAllAdmins = catchAsync(async (req, res) => {
     })
 })
 
+const getAllAdminsList = catchAsync(async (req, res) => {
+    const result = await AdminServices.getAllAdminsListFromDB()
+
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: 'All Admins fetched successfully',
+        data: result.result,
+    })
+})
+
 const getSingleAdmin = catchAsync(async (req, res) => {
     const { id } = req.params
     const result = await AdminServices.getSingleAdminFromDB(id)
@@ -30,7 +41,8 @@ const getSingleAdmin = catchAsync(async (req, res) => {
 const updateAdmin = catchAsync(async (req, res) => {
     const { id } = req.params
     const { admin } = req.body
-    const result = await AdminServices.updateAdminIntoDB(id, admin)
+    const file = req.file
+    const result = await AdminServices.updateAdminIntoDB(id, admin, file)
 
     sendResponse(res, {
         statusCode: StatusCodes.OK,
@@ -54,6 +66,7 @@ const deleteAdmin = catchAsync(async (req, res) => {
 
 export const AdminControllers = {
     getAllAdmins,
+    getAllAdminsList,
     getSingleAdmin,
     updateAdmin,
     deleteAdmin,
