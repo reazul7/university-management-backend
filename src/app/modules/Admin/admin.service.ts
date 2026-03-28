@@ -7,7 +7,11 @@ import AppError from '../../errors/AppError'
 import { StatusCodes } from 'http-status-codes'
 import QueryBuilder from '../../builder/QueryBuilder'
 import { AdminSearchableFields } from './admin.constant'
-import { sendImageToCloudinary, deleteImageFromCloudinary } from '../../utils/sendImageToCloudinary'
+import {
+    sendImageToCloudinary,
+    deleteImageFromCloudinary,
+    getCloudinaryPublicIdFromUrl,
+} from '../../utils/sendImageToCloudinary'
 
 const getAllAdminsFromDB = async (query: Record<string, unknown>) => {
     const adminQuery = new QueryBuilder(Admin.find(), query)
@@ -68,6 +72,11 @@ const updateAdminIntoDB = async (id: string, payload: Partial<TAdmin>, file?: an
 }
 
 const deleteAdminFromDB = async (id: string) => {
+    const admin = await Admin.findById(id)
+    if (!admin) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'Admin not found')
+    }
+
     const session = await mongoose.startSession()
 
     try {
@@ -77,7 +86,6 @@ const deleteAdminFromDB = async (id: string) => {
             throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to delete Admin')
         }
 
-        // get user ID from deletedAdmin
         const userId = deleteAdmin.user
         const deleteUser = await User.findByIdAndUpdate(
             { _id: userId },
@@ -91,14 +99,22 @@ const deleteAdminFromDB = async (id: string) => {
         }
         await session.commitTransaction()
         await session.endSession()
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         await session.abortTransaction()
         await session.endSession()
         throw new Error(error)
     }
+
+    if (admin.profileImgUrl) {
+        const publicId = getCloudinaryPublicIdFromUrl(admin.profileImgUrl)
+        if (publicId) {
+            await deleteImageFromCloudinary(publicId)
+        }
+    }
+
     const result = await Admin.findByIdAndDelete(id)
     if (!result) throw new AppError(StatusCodes.NOT_FOUND, 'Admin not found')
+    return result
 }
 
 export const AdminServices = {

@@ -49,3 +49,14 @@ const storage = multer.diskStorage({
 })
 
 export const upload = multer({ storage: storage })
+
+export const getCloudinaryPublicIdFromUrl = (imageUrl: string) => {
+    const [, uploadPath = ''] = imageUrl.split('/upload/')
+    if (!uploadPath) return null
+
+    const cleanPath = uploadPath.split('?')[0]
+    const pathParts = cleanPath.split('/')
+    const publicIdParts = pathParts[0]?.startsWith('v') ? pathParts.slice(1) : pathParts
+    const publicIdWithExtension = publicIdParts.join('/')
+    return publicIdWithExtension.replace(/\.[^/.]+$/, '')
+}
