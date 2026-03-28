@@ -72,17 +72,6 @@ const deleteAcademicFaculty = catchAsync(async (req, res) => {
     })
 })
 
-const deleteAcademicFaculty = catchAsync(async (req, res) => {
-    const { academicFacultyId } = req.params
-    const result = await AcademicFacultyServices.deleteAcademicFacultyFromDB(academicFacultyId)
-    sendResponse(res, {
-        statusCode: StatusCodes.OK,
-        success: true,
-        message: 'Academic Faculty deleted successfully',
-        data: result,
-    })
-})
-
 export const AcademicFacultyControllers = {
     createAcademicFaculty,
     getAllAcademicFaculties,
