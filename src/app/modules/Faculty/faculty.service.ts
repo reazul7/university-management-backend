@@ -6,6 +6,11 @@ import { TFaculty } from './faculty.interface'
 import { StatusCodes } from 'http-status-codes'
 import QueryBuilder from '../../builder/QueryBuilder'
 import { FacultySearchableFields } from './faculty.constant'
+import {
+    sendImageToCloudinary,
+    deleteImageFromCloudinary,
+    getCloudinaryPublicIdFromUrl,
+} from '../../utils/sendImageToCloudinary'
 
 const getAllFacultiesFromDB = async (query: Record<string, unknown>) => {
     const facultyQuery = new QueryBuilder(Faculty.find().populate('academicDepartment academicFaculty'), query)
@@ -25,11 +30,28 @@ const getSingleFacultyFromDB = async (id: string) => {
     return result
 }
 
-const updateFacultyIntoDB = async (id: string, payload: Partial<TFaculty>) => {
+const updateFacultyIntoDB = async (id: string, payload: Partial<TFaculty>, file?: Express.Multer.File) => {
+    const faculty = await Faculty.findById(id)
+    if (!faculty) throw new AppError(StatusCodes.NOT_FOUND, 'Faculty not found')
+
     const { name, ...remainingFacultyData } = payload
     const modifiedUpdatedData: Record<string, unknown> = {
         ...remainingFacultyData,
     }
+
+    if (file) {
+        if (faculty.profileImgUrl) {
+            const oldPublicId = getCloudinaryPublicIdFromUrl(faculty.profileImgUrl)
+            if (oldPublicId) {
+                await deleteImageFromCloudinary(oldPublicId)
+            }
+        }
+
+        const imageName = `${faculty.id}${payload?.name?.firstName || faculty.name.firstName}`
+        const { secure_url } = await sendImageToCloudinary(file.path, imageName)
+        modifiedUpdatedData.profileImgUrl = secure_url as string
+    }
+
     if (name && Object.keys(name).length) {
         for (const [key, value] of Object.entries(name)) {
             modifiedUpdatedData[`name.${key}`] = value

@@ -6,12 +6,15 @@ import { TStudent } from './student.interface'
 import { StatusCodes } from 'http-status-codes'
 import QueryBuilder from '../../builder/QueryBuilder'
 import { studentSearchableFields } from './student.constant'
+import {
+    deleteImageFromCloudinary,
+    getCloudinaryPublicIdFromUrl,
+    sendImageToCloudinary,
+} from '../../utils/sendImageToCloudinary'
 
 const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
     const studentQuery = new QueryBuilder(
-        Student.find()
-            .populate('user')
-            .populate('admissionSemester academicDepartment academicFaculty'),
+        Student.find().populate('user').populate('admissionSemester academicDepartment academicFaculty'),
         query,
     )
         .search(studentSearchableFields)
@@ -35,11 +38,28 @@ const getSingleStudentFromDB = async (id: string) => {
     return result
 }
 
-const updateStudentIntoDB = async (id: string, payload: Partial<TStudent>) => {
+const updateStudentIntoDB = async (id: string, payload: Partial<TStudent>, file?: Express.Multer.File) => {
+    const student = await Student.findById(id)
+    if (!student) throw new AppError(StatusCodes.NOT_FOUND, 'Student not found')
+
     const { name, guardian, localGuardian, ...remainingStudentData } = payload
     const modifiedUpdatedData: Record<string, unknown> = {
         ...remainingStudentData,
     }
+
+    if (file) {
+        if (student.profileImgUrl) {
+            const oldPublicId = getCloudinaryPublicIdFromUrl(student.profileImgUrl)
+            if (oldPublicId) {
+                await deleteImageFromCloudinary(oldPublicId)
+            }
+        }
+
+        const imageName = `${student.id}${payload?.name?.firstName || student.name.firstName}`
+        const { secure_url } = await sendImageToCloudinary(file.path, imageName)
+        modifiedUpdatedData.profileImgUrl = secure_url as string
+    }
+
     if (name && Object.keys(name).length) {
         for (const [key, value] of Object.entries(name)) {
             modifiedUpdatedData[`name.${key}`] = value

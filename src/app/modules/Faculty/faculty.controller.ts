@@ -30,7 +30,8 @@ const getSingleFaculty = catchAsync(async (req, res) => {
 const updateFaculty = catchAsync(async (req, res) => {
     const { id } = req.params
     const { faculty } = req.body
-    const result = await FacultyServices.updateFacultyIntoDB(id, faculty)
+    const file = req.file
+    const result = await FacultyServices.updateFacultyIntoDB(id, faculty, file)
 
     sendResponse(res, {
         statusCode: StatusCodes.OK,
