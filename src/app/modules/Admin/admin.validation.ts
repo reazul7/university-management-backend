@@ -5,13 +5,17 @@ const createUserNameValidationSchema = z.object({
         .string()
         .max(20)
         .min(1)
-        .regex(/^[A-Z][a-z]*( [A-Z][a-z]*)*$/),
+        .regex(/^[A-Za-z][A-Za-z.\- ]*$/, {
+            message: 'Invalid name format',
+        }),
     middleName: z.string().max(20).optional(),
     lastName: z
         .string()
         .max(20)
         .min(1)
-        .regex(/^[A-Z][a-z]*( [A-Z][a-z]*)*$/),
+        .regex(/^[A-Za-z][A-Za-z.\- ]*$/, {
+            message: 'Invalid name format',
+        }),
 })
 const createAdminValidationSchema = z.object({
     body: z.object({
@@ -45,14 +49,18 @@ const updateUserNameValidationSchema = z.object({
         .string()
         .max(20)
         .min(1)
-        .regex(/^[A-Z][a-z]*( [A-Z][a-z]*)*$/)
+        .regex(/^[A-Za-z][A-Za-z.\- ]*$/, {
+            message: 'Invalid name format',
+        })
         .optional(),
     middleName: z.string().max(20).optional(),
     lastName: z
         .string()
         .max(20)
         .min(1)
-        .regex(/^[A-Z][a-z]*( [A-Z][a-z]*)*$/)
+        .regex(/^[A-Za-z][A-Za-z.\- ]*$/, {
+            message: 'Invalid name format',
+        })
         .optional(),
 })
 

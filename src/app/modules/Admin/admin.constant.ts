@@ -5,5 +5,4 @@ export const AdminSearchableFields = [
     'name.lastName',
     'email',
     'contactNumber',
-    'emergencyContactNumber',
 ]

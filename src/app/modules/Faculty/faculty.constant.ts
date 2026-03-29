@@ -5,5 +5,4 @@ export const FacultySearchableFields = [
     'name.lastName',
     'email',
     'contactNumber',
-    'emergencyContactNumber',
 ]
