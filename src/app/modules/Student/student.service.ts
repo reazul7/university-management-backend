@@ -85,8 +85,8 @@ const updateStudentIntoDB = async (id: string, payload: Partial<TStudent>, file?
 }
 
 const deleteStudentFromDB = async (id: string) => {
-    const studentId = await Student.findOne({ id })
-    if (!studentId) throw new AppError(StatusCodes.NOT_FOUND, 'Student not found')
+    const student = await Student.findById(id)
+    if (!student) throw new AppError(StatusCodes.NOT_FOUND, 'Student not found')
 
     const session = await mongoose.startSession()
     try {
@@ -104,9 +104,16 @@ const deleteStudentFromDB = async (id: string) => {
         }
         await session.commitTransaction()
         await session.endSession()
+
+        if (student.profileImgUrl) {
+            const oldPublicId = getCloudinaryPublicIdFromUrl(student.profileImgUrl)
+            if (oldPublicId) {
+                await deleteImageFromCloudinary(oldPublicId)
+            }
+        }
+
         return deleteStudent
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch {
         await session.abortTransaction()
         await session.endSession()
         throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to delete Student')
