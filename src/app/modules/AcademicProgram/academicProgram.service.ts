@@ -10,7 +10,10 @@ const createAcademicProgramIntoDB = async (payload: string) => {
 }
 
 const getAllAcademicProgramsFromDB = async (query: Record<string, unknown>) => {
-    const academicProgramQuery = new QueryBuilder(AcademicProgram.find().populate('academicDepartment'), query)
+    const academicProgramQuery = new QueryBuilder(
+        AcademicProgram.find().populate('academicDepartment', '_id name academicFaculty'),
+        query,
+    )
         .search(['name'])
         .filter()
         .sort()
