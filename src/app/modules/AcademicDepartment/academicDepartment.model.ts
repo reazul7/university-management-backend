@@ -6,8 +6,8 @@ import { TAcademicDepartment } from './academicDepartment.interface'
 
 const academicDepartmentSchema = new Schema<TAcademicDepartment>(
     {
-        name: { type: String, required: true, unique: true },
-        shortCode: { type: String, required: true, unique: true },
+        name: { type: String, required: true, unique: true, trim: true },
+        shortCode: { type: String, required: true, unique: true, trim: true, uppercase: true },
         academicFaculty: {
             type: Schema.Types.ObjectId,
             ref: 'AcademicFaculty',
