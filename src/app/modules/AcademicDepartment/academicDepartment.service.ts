@@ -15,7 +15,7 @@ const createAcademicDepartmentIntoDB = async (payload: string) => {
 
 const getAllAcademicDepartmentsFromDB = async (query: Record<string, unknown>) => {
     const academicDepartmentQuery = new QueryBuilder(AcademicDepartment.find().populate('academicFaculty'), query)
-        .search(['name'])
+        .search(['name', 'shortCode'])
         .filter()
         .sort()
         .paginate()
@@ -26,7 +26,7 @@ const getAllAcademicDepartmentsFromDB = async (query: Record<string, unknown>) =
 }
 
 const getAllAcademicDepartmentsListFromDB = async () => {
-    const result = await AcademicDepartment.find({}, { _id: 1, name: 1 }).sort({ name: 1 })
+    const result = await AcademicDepartment.find({}, { _id: 1, name: 1, shortCode: 1 }).sort({ name: 1 })
     return { result }
 }
 
