@@ -8,13 +8,16 @@ const academicProgramSchema = new Schema<TAcademicProgram>(
         name: { type: String, required: true, trim: true },
         degree: { type: String, enum: ['BSc', 'BA', 'BBA', 'LLB', 'MSc', 'MA', 'MBA', 'LLM'], required: true },
         level: { type: String, enum: ['undergraduate', 'postgraduate'], required: true },
+        programCode: { type: String, required: true, unique: true, trim: true, uppercase: true },
         academicDepartment: {
             type: Schema.Types.ObjectId,
             ref: 'AcademicDepartment',
             required: true,
         },
-        durationInYears: { type: Number, required: [true, 'Program duration is required'], min: 1, max: 6 },
+        durationInMonths: { type: Number, required: [true, 'Program duration is required'], min: 12, max: 72 },
+        totalSemesters: { type: Number, required: [true, 'Total semester is required'], min: 3, max: 18 },
         totalCredits: { type: Number, required: [true, 'Total credits is required'], min: 30, max: 180 },
+        status: { type: String, enum: ['active', 'inactive'], required: true },
     },
     { timestamps: true },
 )
