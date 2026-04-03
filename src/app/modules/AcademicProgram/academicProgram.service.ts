@@ -14,7 +14,7 @@ const getAllAcademicProgramsFromDB = async (query: Record<string, unknown>) => {
         AcademicProgram.find().populate('academicDepartment', '_id name academicFaculty'),
         query,
     )
-        .search(['name'])
+        .search(['name', 'programCode'])
         .filter()
         .sort()
         .paginate()
